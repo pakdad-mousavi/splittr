@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-cursed-black: #131313;
+  --color-electric-green: #7aef1c;
+  --font-montserrat: 'Montserrat';
+  --font-playfair: 'Playfair Display';
+}
+
+@layer base {
+  body {
+    @apply text-yellow-50;
+  }
+}
