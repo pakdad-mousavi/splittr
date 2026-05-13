@@ -1,5 +1,5 @@
 <template>
-  <header class="p-4 border-gray-300/15 border-b">
+  <header class="p-4 border-gray-300/15 border-b h-16 fixed top-0 w-full bg-cursed-black z-100 animate-header-slide-down">
     <div class="flex items-center">
       <div class="flex gap-x-4 items-center mr-auto">
         <img src="/logo.svg" alt="Logo" class="w-7 h-7" />

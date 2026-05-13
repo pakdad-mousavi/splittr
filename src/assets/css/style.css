@@ -2,15 +2,44 @@
 @import 'tailwindcss';
 
 @theme {
+  /* COLORS */
   --color-cursed-black: #131313;
   --color-electric-green: #7aef1c;
+  --color-swamp-green: #162a12;
+
+  /* TYPOGRAPHY */
   --font-montserrat: 'Montserrat';
   --font-playfair: 'Playfair Display';
+  --text-2xs: 0.625rem;
+
+  /* ANIMATIONS */
+
+  --animate-header-slide-down: header-slide-down 0.75s ease-in-out forwards;
+  @keyframes header-slide-down {
+    0% {
+      top: -4rem;
+    }
+
+    100% {
+      top: 0;
+    }
+  }
+
+  --animate-navbar-slide-up: navbar-slide-up 0.75s ease-in-out forwards;
+  @keyframes navbar-slide-up {
+    0% {
+      bottom: -4rem;
+    }
+
+    100% {
+      bottom: 0;
+    }
+  }
 }
 
 @layer base {
   body {
-    @apply text-yellow-50 font-montserrat;
+    @apply text-yellow-50 font-montserrat bg-cursed-black;
   }
 
   /* Chrome, Safari, Edge, Opera */
@@ -23,5 +52,15 @@
   /* Firefox */
   input[type='number'] {
     -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .router-link-exact-active {
+    @apply bg-swamp-green text-yellow-50;
+  }
+
+  .router-link-exact-active svg {
+    @apply stroke-yellow-50;
   }
 }
