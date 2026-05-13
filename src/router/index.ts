@@ -10,6 +10,13 @@ const router = createRouter({
       children: [
         { path: '', component: () => import('../views/login/Welcome.vue') },
         { path: 'otp', component: () => import('../views/login/Otp.vue') },
+        {
+          path: 'onboarding',
+          component: () => import('../views/login/Onboarding.vue'),
+          meta: {
+            isOnboarding: true,
+          },
+        },
       ],
       meta: {
         requiresAuth: false,
@@ -42,14 +49,19 @@ router.beforeEach(async (to) => {
   } = await supabase.auth.getSession();
 
   const isAuthenticated = !!session;
-
   // routes requiring auth
   if (to.meta.requiresAuth && !isAuthenticated) {
     return router.push('/login');
   }
 
+  // Ensure user is onboarded
+  const username = session?.user?.user_metadata.name as string | undefined;
+  if (!to.path.includes('/login') && !to.meta.isOnboarding && !username) {
+    return router.push('/login/onboarding');
+  }
+
   // prevent authenticated users from seeing auth page
-  if (to.path.includes('/login') && isAuthenticated) {
+  if (to.path.includes('/login') && !to.meta.isOnboarding && isAuthenticated) {
     return router.push('/');
   }
 });
