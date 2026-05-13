@@ -17,10 +17,21 @@ const router = createRouter({
     },
     {
       path: '/',
-      component: () => import('../views/dashboard/Home.vue'),
+      component: () => import('../views/dashboard/Dashboard.vue'),
+      children: [
+        { path: '', component: () => import('../views/dashboard/Home.vue') },
+        { path: 'groups', component: () => import('../views/dashboard/Groups.vue') },
+        { path: 'expenses', component: () => import('../views/dashboard/Expenses.vue') },
+        { path: 'profile', component: () => import('../views/dashboard/Profile.vue') },
+      ],
       meta: {
         requiresAuth: true,
       },
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/NotFound.vue'),
     },
   ],
 });
