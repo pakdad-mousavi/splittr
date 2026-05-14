@@ -7,12 +7,19 @@ import Scan from '@/components/icons/Scan.vue';
 import { useAuth } from '@/utils/auth';
 
 const { user } = useAuth();
-const firstname = (user.value?.user_metadata.name as string).split(' ')[0];
+
+const getTrimmedFirstname = () => {
+  const THRESHOLD = 25;
+
+  const firstname = (user.value?.user_metadata.name as string).split(' ')[0];
+  const firstnameLength = firstname?.length || 0;
+  return firstnameLength > 30 ? firstname?.slice(0, THRESHOLD) + '...' : firstname;
+};
 </script>
 
 <template>
   <div class="p-4">
-    <h2 class="font-playfair text-lg mb-4">Welcome Back, {{ firstname }}.</h2>
+    <h2 class="font-playfair text-lg mb-4">Welcome Back, {{ getTrimmedFirstname() }}.</h2>
 
     <!-- BALANCE CARD -->
     <div
