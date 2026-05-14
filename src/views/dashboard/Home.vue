@@ -4,6 +4,8 @@ import Minus from '@/components/icons/Minus.vue';
 import Plus from '@/components/icons/Plus.vue';
 import Profile from '@/components/icons/Profile.vue';
 import Scan from '@/components/icons/Scan.vue';
+
+import { RouterLink } from 'vue-router';
 import { useAuth } from '@/utils/auth';
 
 const { user } = useAuth();
@@ -55,14 +57,14 @@ const getTrimmedFirstname = () => {
         </div>
         <span class="text-2xs mt-2">EXPENSE</span>
       </div>
-      <div class="flex flex-col">
+      <RouterLink class="flex flex-col" to="/groups">
         <div
           class="size-12 bg-neutral-800 rounded-md border border-electric-green/30 hover:border-electric-green duration-200 shadow flex items-center justify-center cursor-pointer"
         >
           <Group class="stroke-electric-green stroke-1"></Group>
         </div>
         <span class="text-2xs mt-2">GROUPS</span>
-      </div>
+      </RouterLink>
       <div class="flex flex-col">
         <div
           class="size-12 bg-neutral-800 rounded-md border border-electric-green/30 hover:border-electric-green duration-200 shadow flex items-center justify-center cursor-pointer"
@@ -71,14 +73,14 @@ const getTrimmedFirstname = () => {
         </div>
         <span class="text-2xs mt-2">SCAN</span>
       </div>
-      <div class="flex flex-col">
+      <RouterLink class="flex flex-col" to="/profile">
         <div
           class="size-12 bg-neutral-800 rounded-md border border-electric-green/30 hover:border-electric-green duration-200 shadow flex items-center justify-center cursor-pointer"
         >
           <Profile class="stroke-electric-green stroke-1"></Profile>
         </div>
         <span class="text-2xs mt-2">PROFILE</span>
-      </div>
+      </RouterLink>
     </div>
 
     <!-- RECENT GROUPS -->
