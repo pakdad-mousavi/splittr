@@ -8,8 +8,8 @@ const { session } = useAuth();
 
 <template>
   <div class="min-h-screen flex flex-col h-full relative">
-    <div class="absolute top-20 -right-10 w-30 h-30 bg-electric-green/10 blur-3xl z-1000"></div>
-    <div class="absolute bottom-20 -left-10 w-30 h-30 bg-electric-green/10 blur-3xl z-1000"></div>
+    <div class="absolute top-20 -right-10 w-30 h-30 bg-electric-green/10 blur-3xl z-1000 pointer-events-none"></div>
+    <div class="absolute bottom-20 -left-10 w-30 h-30 bg-electric-green/10 blur-3xl z-1000 pointer-events-none"></div>
 
     <Header v-if="!!session"></Header>
     <div class="my-16">
