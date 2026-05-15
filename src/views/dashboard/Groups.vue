@@ -34,8 +34,6 @@ onMounted(async () => {
 
     <div class="space-y-4">
       <GroupCard :group="group" v-for="group in groups"></GroupCard>
-      <!-- <GroupCard :names="['Pakdad', 'Emily', 'Jack']"></GroupCard> -->
-      <!-- <GroupCard :names="['Pakdad', 'Emily', 'Jack']"></GroupCard> -->
     </div>
   </div>
 </template>
