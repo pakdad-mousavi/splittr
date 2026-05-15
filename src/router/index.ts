@@ -55,8 +55,12 @@ router.beforeEach(async (to) => {
   }
 
   // Ensure user is onboarded
-  const username = session?.user?.user_metadata.name as string | undefined;
-  if (!to.path.includes('/login') && !to.meta.isOnboarding && !username) {
+  const profile = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', session?.user.id || '');
+
+  if (!to.path.includes('/login') && !to.meta.isOnboarding && (!profile.data?.length || false)) {
     return router.push('/login/onboarding');
   }
 

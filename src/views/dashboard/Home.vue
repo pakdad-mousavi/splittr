@@ -7,13 +7,29 @@ import Scan from '@/components/icons/Scan.vue';
 
 import { RouterLink } from 'vue-router';
 import { useAuth } from '@/utils/auth';
+import { watch, ref } from 'vue';
+import { supabase } from '@/utils/supabase';
 
 const { user } = useAuth();
+const name = ref<string | null>(null);
+
+// Watch for user to be populated, then fetch profile
+watch(
+  user,
+  async (newUser) => {
+    if (!newUser?.id) return;
+
+    const { data } = await supabase.from('profiles').select('name').eq('id', newUser.id);
+
+    name.value = data?.[0]?.name as string;
+  },
+  { immediate: true },
+); // immediate: true handles case where user is already set
 
 const getTrimmedFirstname = () => {
   const THRESHOLD = 25;
 
-  const firstname = (user.value?.user_metadata.name as string).split(' ')[0];
+  const firstname = (name.value as string)?.split(' ')[0];
   const firstnameLength = firstname?.length || 0;
   return firstnameLength > 30 ? firstname?.slice(0, THRESHOLD) + '...' : firstname;
 };
@@ -21,7 +37,7 @@ const getTrimmedFirstname = () => {
 
 <template>
   <div class="p-4">
-    <h2 class="font-playfair text-lg mb-4">Welcome Back, {{ getTrimmedFirstname() }}.</h2>
+    <h2 class="font-playfair text-lg mb-4">Welcome Back, {{ getTrimmedFirstname() || '...' }}.</h2>
 
     <!-- BALANCE CARD -->
     <div

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Email from '@/components/icons/Email.vue';
 import { useAuth } from '@/utils/auth';
 import { supabase } from '@/utils/supabase';
 import { ref } from 'vue';
@@ -16,11 +15,9 @@ const updateName = async (shouldCheckLength: boolean) => {
     errorText.value = 'Please enter your name.';
     return;
   }
-
-  const { error } = await supabase.auth.updateUser({
-    data: {
-      name: name.value || session.value?.user.email,
-    },
+  const { error } = await supabase.from('profiles').insert({
+    id: session.value?.user.id as string,
+    name: name.value,
   });
 
   if (error) {
