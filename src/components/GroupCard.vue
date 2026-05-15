@@ -4,6 +4,7 @@ import ProfileIcon from '@/components/ProfileIcon.vue';
 import type { Database } from '@/utils/database.types';
 import { supabase } from '@/utils/supabase';
 import { computed, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 
 type Group = Database['public']['Tables']['groups']['Row'];
 
@@ -44,7 +45,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-4 bg-neutral-800 rounded-md border border-neutral-600 relative group">
+  <RouterLink
+    class="p-4 bg-neutral-800 rounded-md border border-neutral-600 relative group block"
+    :to="`/groups/${group.id}`"
+  >
     <div class="flex items-center mb-2">
       <h3 class="text-sm uppercase font-semibold flex-1">{{ trimmedGroupName }}</h3>
       <div class="flex text-2xs min-h-6">
@@ -84,5 +88,5 @@ onMounted(async () => {
     <div
       class="absolute -top-px -right-px size-6 border-t border-r border-electric-green rounded-tr-md group-hover:size-10 duration-200"
     ></div>
-  </div>
+  </RouterLink>
 </template>
