@@ -17,7 +17,7 @@ const updateName = async (shouldCheckLength: boolean) => {
   }
   const { error } = await supabase.from('profiles').insert({
     id: session.value?.user.id as string,
-    name: name.value,
+    name: name.value || session.value?.user.email || '',
   });
 
   if (error) {
