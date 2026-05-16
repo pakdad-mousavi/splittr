@@ -3,28 +3,39 @@
 import Plus from '@/components/icons/Plus.vue';
 import Scan from '@/components/icons/Scan.vue';
 import Group from '@/components/icons/Group.vue';
-import Trash from '@/components/icons/Trash.vue';
-
-// OTHER
-import { computed, onBeforeMount, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import ProfileIcon from '@/components/ProfileIcon.vue';
-import { useGroupStore } from '@/stores/groups';
-import { useProfileStore } from '@/stores/profiles';
 import Invite from '@/components/icons/Invite.vue';
 import Edit from '@/components/icons/Edit.vue';
 import Email from '@/components/icons/Email.vue';
-import { supabase } from '@/utils/supabase';
+import Trash from '@/components/icons/Trash.vue';
+import ProfileIcon from '@/components/ProfileIcon.vue';
+
+// UTILS
+import type { Database } from '@/utils/database.types';
 import { createInvite } from '@/utils/functions/sendInvite';
+import { useAuth } from '@/utils/auth';
+import { supabase } from '@/utils/supabase';
+
+// VUE
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useGroupStore } from '@/stores/groups';
+import { useProfileStore } from '@/stores/profiles';
 
 // ------------------------------
 // ------------------------------
 // ------------------------------
 
-// Stores and router
+// Refs, stores and router
+const { user } = useAuth();
 const groupStore = useGroupStore();
 const profileStore = useProfileStore();
 const router = useRouter();
+
+type Expense = Database['public']['Tables']['expenses']['Row'];
+const expenses = ref<Expense[]>([]);
+
+type ExpenseParticipant = Database['public']['Tables']['expense_participants']['Row'];
+const expenseParticipants = ref<ExpenseParticipant[]>([]);
 
 // Computed values
 const currentGroup = computed(() => {
@@ -80,11 +91,58 @@ const inviteByEmail = async () => {
 
 const scanReceipt = () => {};
 const addExpense = () => {};
+const splitExpensesEqually = () => {};
+const dipsplayManualExpSplittingScreen = () => {};
+
+const groupName = ref('');
+const updateGroupName = () => {};
+
 const deleteGroup = () => {};
 
-// Update group members before mounting component in case someone accepts an invite or leaves the group
-onBeforeMount(async () => {
+// ---------------
+//     HELPERS
+// ---------------
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currencyDisplay: 'narrowSymbol',
+  currency: 'MYR',
+});
+
+const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+  year: '2-digit',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+// ----------------------
+//    EXPENSE FETCHING
+// ----------------------
+onMounted(async () => {
+  // Initialize if not initialized yet
+  await groupStore.init();
+
+  // Force update members
   await groupStore.updateMembers();
+
+  groupName.value = currentGroup.value!.name;
+
+  // Get expenses from db
+  const expensesRes = await supabase
+    .from('expenses')
+    .select('*')
+    .eq('group_id', currentGroup.value!.id)
+    .order('created_by', { ascending: true });
+
+  if (expensesRes.error) return;
+  expenses.value = expensesRes.data.reverse();
+
+  console.log(expensesRes.data);
+
+  // Get expense participants from db
+  const expenseParticipantsRes = await supabase.from('expense_participants').select('*');
+  if (expenseParticipantsRes.error) return;
+  expenseParticipants.value = expenseParticipantsRes.data;
 });
 </script>
 
@@ -122,14 +180,6 @@ onBeforeMount(async () => {
         </button>
       </div>
 
-      <!-- <button
-        class="cursor-pointer active:translate-y-px duration-200 flex border border-rose-500 py-2 rounded-md text-rose-500 items-center text-xs font-semibold gap-x-2 w-full justify-center"
-        @click="deleteGroup"
-      >
-        <Trash class="stroke-rose-500 size-4"></Trash>
-        <span>Delete Group</span>
-      </button> -->
-
       <!-- MEMBERS -->
       <div class="mt-4">
         <div class="flex gap-x-4">
@@ -151,16 +201,80 @@ onBeforeMount(async () => {
           >{{ groupMemberNames.length }} total</span
         >
       </div>
+
+      <!-- ACTION CENTER -->
+      <div
+        class="my-6 bg-linear-to-r from-transparent via-neutral-500 h-0.5 w-full"
+        v-if="user?.id === currentGroup.created_by"
+      ></div>
+      <div v-if="user?.id === currentGroup.created_by">
+        <p class="text-sm mb-2">Split Expenses:</p>
+        <div class="flex gap-x-2 mb-2">
+          <button
+            class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
+            @click="splitExpensesEqually"
+          >
+            <span class="text-xs text-electric-green">Equally</span>
+          </button>
+          <button
+            class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
+            @click="dipsplayManualExpSplittingScreen"
+          >
+            <span class="text-xs text-electric-green">Manually</span>
+          </button>
+        </div>
+        <button
+          class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
+          @click="dipsplayManualExpSplittingScreen"
+        >
+          <Scan class="size-4 stroke-electric-green"></Scan>
+          <span class="text-xs text-electric-green">Scan Receipt</span>
+        </button>
+      </div>
     </div>
 
     <!-- CURRENT SETTLEMENTS -->
     <div class="mb-8">
-      <h4 class="font-playfair">Current Settlements:</h4>
+      <h4 class="font-playfair mb-2">Current Settlements:</h4>
     </div>
 
     <!-- EXPENSE FEED -->
     <div class="mb-8">
-      <h4 class="font-playfair">Expense Feed:</h4>
+      <h4 class="font-playfair mb-2">Expense Feed:</h4>
+      <div class="flex flex-col gap-4">
+        <div
+          class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md"
+          v-for="expense in expenses"
+        >
+          <div class="flex text-sm gap-x-2">
+            <div class="flex-1">
+              <h4 class="font-medium">
+                {{ expense.title.length > 18 ? expense.title.slice(0, 19) + '...' : expense.title }}
+              </h4>
+            </div>
+            <span class="text-electric-green">{{
+              currencyFormatter.format(expense.total_amount)
+            }}</span>
+          </div>
+          <div class="text-xs mt-1 flex w-full items-center text-yellow-50/60">
+            <span class="flex-1">
+              Created by {{ profileStore.profiles.get(expense.created_by)?.split(' ')[0] }}
+            </span>
+            <span>
+              {{ dateFormatter.format(new Date(expense.created_at)) }}
+            </span>
+          </div>
+
+          <div v-if="expense.created_by === user?.id" class="mt-2 flex gap-x-2">
+            <button class="p-1 bg-electric-green/10 border-electric-green border rounded-md">
+              <Edit class="stroke-electric-green size-3"></Edit>
+            </button>
+            <button class="p-1 bg-rose-500/10 border-rose-500 border rounded-md">
+              <Trash class="stroke-rose-500 size-3"></Trash>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- INVITE MEMBERS -->
@@ -190,7 +304,29 @@ onBeforeMount(async () => {
 
     <!-- EDIT GROUP -->
     <div class="mb-8" id="edit">
-      <h4 class="font-playfair">Edit Group:</h4>
+      <h4 class="font-playfair mb-2">Edit Group:</h4>
+      <div class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md">
+        <p class="text-xs mb-2">Group Name:</p>
+        <input
+          type="email"
+          v-model.trim="groupName"
+          placeholder="john.doe@example.com"
+          class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-1.5 rounded-md text-xs mb-2"
+        />
+        <button
+          class="cursor-pointer text-xs bg-electric-green hover:bg-electric-green/80 rounded-md py-1.5 text-cursed-black flex gap-x-1 justify-center active:translate-y-px duration-200"
+          @click="updateGroupName"
+        >
+          <span class="">Update Group Name</span>
+        </button>
+        <button
+          class="cursor-pointer active:translate-y-px duration-200 flex border border-rose-500 py-2 rounded-md text-rose-500 items-center text-xs gap-x-2 w-full justify-center mt-2"
+          @click="deleteGroup"
+        >
+          <Trash class="stroke-rose-500 stroke-1 size-4"></Trash>
+          <span>Delete Group</span>
+        </button>
+      </div>
     </div>
   </div>
   <div v-else class="p-4 flex flex-col items-center justify-center text-center">

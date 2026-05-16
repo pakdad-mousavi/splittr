@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           expense_id: number
+          has_paid: boolean
           id: number
           owed_amount: number
           user_id: string
@@ -25,6 +26,7 @@ export type Database = {
         Insert: {
           created_at?: string
           expense_id: number
+          has_paid?: boolean
           id?: number
           owed_amount: number
           user_id: string
@@ -32,6 +34,7 @@ export type Database = {
         Update: {
           created_at?: string
           expense_id?: number
+          has_paid?: boolean
           id?: number
           owed_amount?: number
           user_id?: string
@@ -49,25 +52,25 @@ export type Database = {
       expenses: {
         Row: {
           created_at: string
+          created_by: string
           group_id: number
           id: number
-          paid_by: string | null
           title: string
           total_amount: number
         }
         Insert: {
           created_at?: string
+          created_by: string
           group_id: number
           id?: number
-          paid_by?: string | null
           title: string
           total_amount: number
         }
         Update: {
           created_at?: string
+          created_by?: string
           group_id?: number
           id?: number
-          paid_by?: string | null
           title?: string
           total_amount?: number
         }
