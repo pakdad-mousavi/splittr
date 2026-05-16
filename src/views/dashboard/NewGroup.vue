@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import Arrow from '@/components/icons/Arrow.vue';
-import { useGroupStore } from '@/stores/groups';
+
 import { useAuth } from '@/utils/auth';
 import { supabase } from '@/utils/supabase';
+import { generateRandomInviteCode } from '@/utils/utilities';
+import { useGroupStore } from '@/stores/groups';
+
 import { ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
@@ -12,16 +15,26 @@ const groupStore = useGroupStore();
 
 const name = ref();
 const errorText = ref<string | null>(null);
+const errCount = ref(0);
 
 const createGroup = async () => {
+  const inviteCode = generateRandomInviteCode();
   const groupInsertRes = await supabase
     .from('groups')
-    .insert({ name: name.value, created_by: user.value?.id || '' })
+    .insert({ name: name.value, created_by: user.value?.id || '', invite_code: inviteCode })
     .select()
     .single();
+
   if (groupInsertRes.error) {
-    errorText.value = groupInsertRes.error.message;
-    return;
+    // Retry up to 3 times in case of a duplicate invite code generation
+    if (errCount.value === 3) {
+      errCount.value = 0;
+      errorText.value = groupInsertRes.error.message;
+      return;
+    } else {
+      errCount.value++;
+      return await createGroup();
+    }
   }
 
   const groupMemberInsertRes = await supabase

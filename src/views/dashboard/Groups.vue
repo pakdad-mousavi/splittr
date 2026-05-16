@@ -40,7 +40,7 @@ const currentGroup = computed(() => {
     <Transition name="slide-in">
       <div
         v-if="currentGroup"
-        class="h-[calc(100vh-128px)] bg-neutral-800/30 backdrop-blur-xl absolute top-16 left-0 w-full z-50 rounded-md p-4 overflow-y-scroll"
+        class="h-[calc(100vh-128px)] bg-neutral-950/70 backdrop-blur-xl absolute top-16 left-0 w-full z-50 rounded-md p-4 overflow-y-scroll"
       >
         <div class="p-4 bg-neutral-800 border border-neutral-600 flex flex-col">
           <div class="flex items-center">
