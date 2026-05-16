@@ -1,20 +1,13 @@
 <script setup lang="ts">
 import GroupCard from '@/components/GroupCard.vue';
-import Group from '@/components/icons/Group.vue';
+import Copy from '@/components/icons/Copy.vue';
 import Plus from '@/components/icons/Plus.vue';
+import Scan from '@/components/icons/Scan.vue';
+import Trash from '@/components/icons/Trash.vue';
 import { useGroupStore } from '@/stores/groups';
-import { computed } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink } from 'vue-router';
 
-const router = useRouter();
 const groupStore = useGroupStore();
-
-const currentGroup = computed(() => {
-  const currentGroupId = router.currentRoute.value.params.id as string | undefined;
-  if (!currentGroupId) return undefined;
-
-  return groupStore.groups.find((g) => g.id === Number(currentGroupId));
-});
 </script>
 
 <template>
@@ -35,29 +28,6 @@ const currentGroup = computed(() => {
     <div class="space-y-4">
       <GroupCard :group="group" v-for="group in groupStore.groups"></GroupCard>
     </div>
-
-    <!-- GROUP PANEL -->
-    <Transition name="slide-in">
-      <div
-        v-if="currentGroup"
-        class="h-[calc(100vh-128px)] bg-neutral-950/70 backdrop-blur-xl absolute top-16 left-0 w-full z-50 rounded-md p-4 overflow-y-scroll"
-      >
-        <div class="p-4 bg-neutral-800 border border-neutral-600 flex flex-col">
-          <div class="flex items-center">
-            <div class="flex-1">
-              <span class="text-xs text-electric-green">Group Invite Code</span>
-            </div>
-            <div class="flex flex-col items-end">
-              <div class="flex items-center gap-x-2">
-                <Group class="stroke-yellow-50 size-4"></Group>
-                <span class="text-xs">Members</span>
-              </div>
-              <span>{{ currentGroup.name }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 

@@ -30,9 +30,9 @@ const router = createRouter({
         { path: '', component: () => import('../views/dashboard/Home.vue') },
 
         // GROUPS
-        { path: 'groups/', component: () => import('../views/dashboard/Groups.vue') },
-        { path: 'groups/new', component: () => import('../views/dashboard/NewGroup.vue') },
-        { path: 'groups/:id', component: () => import('../views/dashboard/Groups.vue') },
+        { path: 'groups/', component: () => import('../views/dashboard/group/Groups.vue') },
+        { path: 'groups/new', component: () => import('../views/dashboard/group/NewGroup.vue') },
+        { path: 'groups/:id', component: () => import('../views/dashboard/group/GroupDetails.vue') },
         { path: 'expenses', component: () => import('../views/dashboard/Expenses.vue') },
         { path: 'profile', component: () => import('../views/dashboard/Profile.vue') },
       ],
