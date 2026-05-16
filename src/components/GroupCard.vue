@@ -42,7 +42,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   >
     <div class="flex items-center mb-2">
       <h3 class="text-sm uppercase font-semibold flex-1">{{ trimmedGroupName }}</h3>
-      <div class="flex text-2xs min-h-6">
+      <div class="flex min-h-6">
         <ProfileIcon
           :initial="index < 2 ? name.slice(0, 1) : `+${names.length - 2}`"
           :borderStyle="index < 2 ? 'dim' : 'none'"

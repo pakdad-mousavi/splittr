@@ -19,7 +19,7 @@ const getBorderStyle = () => {
 
 <template>
   <div
-    class="rounded-full w-6 h-6 bg-cursed-black flex items-center justify-center"
+    class="rounded-full w-6 h-6 bg-cursed-black flex items-center justify-center text-2xs"
     :class="getBorderStyle()"
   >
     {{ initial }}
