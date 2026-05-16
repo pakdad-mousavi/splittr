@@ -3,7 +3,6 @@ import Arrow from '@/components/icons/Arrow.vue';
 
 import { useAuth } from '@/utils/auth';
 import { supabase } from '@/utils/supabase';
-import { generateRandomInviteCode } from '@/utils/utilities';
 import { useGroupStore } from '@/stores/groups';
 
 import { ref } from 'vue';
@@ -18,10 +17,9 @@ const errorText = ref<string | null>(null);
 const errCount = ref(0);
 
 const createGroup = async () => {
-  const inviteCode = generateRandomInviteCode();
   const groupInsertRes = await supabase
     .from('groups')
-    .insert({ name: name.value, created_by: user.value?.id || '', invite_code: inviteCode })
+    .insert({ name: name.value, created_by: user.value?.id || '' })
     .select()
     .single();
 
