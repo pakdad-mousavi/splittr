@@ -115,24 +115,59 @@ export type Database = {
           created_at: string
           created_by: string
           id: number
-          invite_code: string
           name: string
         }
         Insert: {
           created_at?: string
           created_by?: string
           id?: number
-          invite_code?: string
           name: string
         }
         Update: {
           created_at?: string
           created_by?: string
           id?: number
-          invite_code?: string
           name?: string
         }
         Relationships: []
+      }
+      invitations: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          group_id: number | null
+          id: string
+          invited_by: string | null
+          invited_email: string
+          token: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string
+          group_id?: number | null
+          id?: string
+          invited_by?: string | null
+          invited_email: string
+          token?: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          group_id?: number | null
+          id?: string
+          invited_by?: string | null
+          invited_email?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
