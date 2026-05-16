@@ -4,13 +4,13 @@ import Navbar from '@/components/Navbar.vue';
 import { useGroupStore } from '@/stores/groups';
 import { useProfileStore } from '@/stores/profiles';
 import { useAuth } from '@/utils/auth';
-import { onMounted } from 'vue';
+import { onBeforeMount } from 'vue';
 
 const { session } = useAuth();
 const groupStore = useGroupStore();
 const profileStore = useProfileStore();
 
-onMounted(async () => {
+onBeforeMount(async () => {
   await groupStore.init();
   await profileStore.init();
 });
