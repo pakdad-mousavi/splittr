@@ -103,7 +103,7 @@ onUnmounted(() => {
       We've sent a 6 digit code to your email.</span
     >
 
-    <p class="text-xs text-red-500 mb-2" v-if="errorText">{{ errorText }}.</p>
+    <p class="text-xs text-rose-500 mb-2" v-if="errorText">{{ errorText }}.</p>
 
     <div class="flex gap-x-2 mb-4">
       <input

@@ -138,7 +138,7 @@ const getTrimmedFirstname = () => {
             </div>
             <div class="w-3/10 text-right">
               <h3 class="text-sm uppercase">RM 23.00</h3>
-              <span class="text-xs text-red-500">Pending</span>
+              <span class="text-xs text-rose-500">Pending</span>
             </div>
           </div>
         </div>

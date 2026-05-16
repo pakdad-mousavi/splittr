@@ -83,7 +83,7 @@ const createGroup = async () => {
         >
           Create New Group
         </button>
-        <p class="text-xs text-red-500 mt-2" v-if="errorText">{{ errorText }}</p>
+        <p class="text-xs text-rose-500 mt-2" v-if="errorText">{{ errorText }}</p>
       </div>
     </div>
   </div>

@@ -55,6 +55,6 @@ const updateName = async (shouldCheckLength: boolean) => {
     >
       Skip for now
     </button>
-    <p class="text-xs mt-2 text-red-500" v-if="errorText">{{ errorText }}</p>
+    <p class="text-xs mt-2 text-rose-500" v-if="errorText">{{ errorText }}</p>
   </div>
 </template>

@@ -87,7 +87,7 @@ const signInWithPredefinedAccount = async (acc: PREDEFINED_ACCOUNT) => {
       <Email class="stroke-cursed-black w-4 h-4 stroke-1!"></Email>
       <span class="">Continue with Email</span>
     </button>
-    <span v-if="errorText" class="text-red-500 text-xs mt-2">{{ errorText }}</span>
+    <span v-if="errorText" class="text-rose-500 text-xs mt-2">{{ errorText }}</span>
 
     <div class="flex items-center justify-center gap-x-4 my-6">
       <div class="w-full h-px bg-gray-300/20"></div>
