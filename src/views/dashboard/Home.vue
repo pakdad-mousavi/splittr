@@ -115,7 +115,7 @@ const getTrimmedFirstname = () => {
 
       <div class="space-y-2" v-else>
         <div
-          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200"
+          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200 rounded-md"
         >
           <div class="flex gap-x-2">
             <div class="w-7/10">
@@ -129,7 +129,7 @@ const getTrimmedFirstname = () => {
           </div>
         </div>
         <div
-          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200"
+          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200 rounded-md"
         >
           <div class="flex gap-x-2">
             <div class="w-7/10">
@@ -143,7 +143,7 @@ const getTrimmedFirstname = () => {
           </div>
         </div>
         <div
-          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200"
+          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200 rounded-md"
         >
           <div class="flex gap-x-2">
             <div class="w-7/10">
