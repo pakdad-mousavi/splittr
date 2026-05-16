@@ -2,26 +2,18 @@
 import GroupCard from '@/components/GroupCard.vue';
 import Group from '@/components/icons/Group.vue';
 import Plus from '@/components/icons/Plus.vue';
-import type { Database } from '@/utils/database.types';
-import { supabase } from '@/utils/supabase';
-import { computed, onMounted, ref } from 'vue';
+import { useGroupStore } from '@/stores/groups';
+import { computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
-type TGroup = Database['public']['Tables']['groups']['Row'];
 const router = useRouter();
+const groupStore = useGroupStore();
 
-const groups = ref<TGroup[]>([]);
 const currentGroup = computed(() => {
   const currentGroupId = router.currentRoute.value.params.id as string | undefined;
   if (!currentGroupId) return undefined;
 
-  return groups.value.find((g) => g.id === Number(currentGroupId));
-});
-
-onMounted(async () => {
-  // Get the groups that the user is inside of
-  const userGroups = await supabase.from('groups').select('*');
-  groups.value = userGroups.data || [];
+  return groupStore.groups.find((g) => g.id === Number(currentGroupId));
 });
 </script>
 
@@ -41,7 +33,7 @@ onMounted(async () => {
     </div>
 
     <div class="space-y-4">
-      <GroupCard :group="group" v-for="group in groups"></GroupCard>
+      <GroupCard :group="group" v-for="group in groupStore.groups"></GroupCard>
     </div>
 
     <!-- GROUP PANEL -->

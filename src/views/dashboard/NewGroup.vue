@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Arrow from '@/components/icons/Arrow.vue';
+import { useGroupStore } from '@/stores/groups';
 import { useAuth } from '@/utils/auth';
 import { supabase } from '@/utils/supabase';
 import { ref } from 'vue';
@@ -7,12 +8,12 @@ import { RouterLink, useRouter } from 'vue-router';
 
 const { user } = useAuth();
 const router = useRouter();
+const groupStore = useGroupStore();
 
 const name = ref();
 const errorText = ref<string | null>(null);
 
 const createGroup = async () => {
-  console.log(user.value?.id || '');
   const groupInsertRes = await supabase
     .from('groups')
     .insert({ name: name.value, created_by: user.value?.id || '' })
@@ -32,6 +33,9 @@ const createGroup = async () => {
     return;
   }
 
+  // Update both groups and members
+  await groupStore.updateGroups();
+  await groupStore.updateMembers();
   router.push('/groups');
 };
 </script>

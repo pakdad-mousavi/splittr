@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Group from '@/components/icons/Group.vue';
 import ProfileIcon from '@/components/ProfileIcon.vue';
+import { useGroupStore } from '@/stores/groups';
+import { useProfileStore } from '@/stores/profiles';
 import type { Database } from '@/utils/database.types';
-import { supabase } from '@/utils/supabase';
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
 type Group = Database['public']['Tables']['groups']['Row'];
@@ -12,35 +13,25 @@ const props = defineProps<{
   group: Group;
 }>();
 
-const names = ref<string[]>([]);
+const groupStore = useGroupStore();
+const profileStore = useProfileStore();
+
+const names = computed(() => {
+  const groupMembers = groupStore.members[props.group.id];
+  if (!groupMembers) return [''];
+
+  return groupMembers.map((gm) => profileStore.profiles.get(gm.user_id) || '.');
+});
+
 const firstTwoNames = computed(() => names.value.slice(0, 3));
 const trimmedGroupName = computed(() =>
-  props.group.name.length > 15 ? props.group.name.slice(0, 16) : props.group.name,
+  props.group.name.length > 15 ? props.group.name.slice(0, 16) + '...' : props.group.name,
 );
 
 const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
-});
-
-onMounted(async () => {
-  // Get all the members involved with the groups that the user is inside of
-  const { data: groupMembers } = await supabase
-    .from('group_members')
-    .select('*')
-    .eq('group_id', props.group.id);
-
-  if (!groupMembers) return;
-
-  const memberNames = [] as string[];
-
-  for (const m of groupMembers) {
-    const { data } = await supabase.from('profiles').select('name').eq('id', m.user_id);
-    memberNames.push(data?.[0]?.name || '');
-  }
-
-  names.value = memberNames;
 });
 </script>
 
