@@ -14,47 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
-      expense_participants: {
-        Row: {
-          created_at: string
-          expense_id: number
-          has_paid: boolean
-          id: number
-          owed_amount: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          expense_id: number
-          has_paid?: boolean
-          id?: number
-          owed_amount: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          expense_id?: number
-          has_paid?: boolean
-          id?: number
-          owed_amount?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "expense_participants_expense_id_fkey"
-            columns: ["expense_id"]
-            isOneToOne: false
-            referencedRelation: "expenses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       expenses: {
         Row: {
           created_at: string
           created_by: string
           group_id: number
           id: number
+          is_split: boolean
           title: string
           total_amount: number
         }
@@ -63,6 +29,7 @@ export type Database = {
           created_by: string
           group_id: number
           id?: number
+          is_split?: boolean
           title: string
           total_amount: number
         }
@@ -71,6 +38,7 @@ export type Database = {
           created_by?: string
           group_id?: number
           id?: number
+          is_split?: boolean
           title?: string
           total_amount?: number
         }
@@ -89,18 +57,21 @@ export type Database = {
           group_id: number
           id: number
           joined_at: string
+          pending_amount: number
           user_id: string
         }
         Insert: {
           group_id: number
           id?: number
           joined_at?: string
+          pending_amount?: number
           user_id: string
         }
         Update: {
           group_id?: number
           id?: number
           joined_at?: string
+          pending_amount?: number
           user_id?: string
         }
         Relationships: [
