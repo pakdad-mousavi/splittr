@@ -39,7 +39,7 @@ const totalManualSplit = computed(() =>
 
 const errorText = ref<string | null>(null);
 const splitManually = async () => {
-  if (totalManualSplit.value !== totalUnsettledExpenses.value) {
+  if (totalManualSplit.value.toFixed(2) !== totalUnsettledExpenses.value.toFixed(2)) {
     errorText.value =
       'Please ensure that the total of your manual split is equal to the total unsettled expenses.';
     return;
@@ -101,8 +101,8 @@ watchEffect(() => {
       <span
         class="text-electric-green"
         :class="{
-          'text-amber-500!': totalManualSplit < totalUnsettledExpenses,
-          'text-rose-500': totalManualSplit > totalUnsettledExpenses,
+          'text-amber-500!': totalManualSplit.toFixed(2) < totalUnsettledExpenses.toFixed(2),
+          'text-rose-500': totalManualSplit.toFixed(2) > totalUnsettledExpenses.toFixed(2),
         }"
       >
         {{ currencyFormatter.format(totalUnsettledExpenses - totalManualSplit) }}
@@ -111,16 +111,16 @@ watchEffect(() => {
     <div
       class="mb-4 w-full h-6 border-electric-green border rounded-md overflow-hidden duration-200"
       :class="{
-        'border-amber-500!': totalManualSplit < totalUnsettledExpenses,
-        'border-rose-500': totalManualSplit > totalUnsettledExpenses,
+        'border-amber-500!': totalManualSplit.toFixed(2) < totalUnsettledExpenses.toFixed(2),
+        'border-rose-500': totalManualSplit.toFixed(2) > totalUnsettledExpenses.toFixed(2),
       }"
     >
       <div
         class="h-full bg-electric-green/50 duration-200"
         :style="`width: ${(totalManualSplit / totalUnsettledExpenses) * 100}%`"
         :class="{
-          'bg-amber-500/50!': totalManualSplit < totalUnsettledExpenses,
-          'bg-rose-500/50': totalManualSplit > totalUnsettledExpenses,
+          'bg-amber-500/50!': totalManualSplit.toFixed(2) < totalUnsettledExpenses.toFixed(2),
+          'bg-rose-500/50': totalManualSplit.toFixed(2) > totalUnsettledExpenses.toFixed(2),
         }"
       ></div>
     </div>
