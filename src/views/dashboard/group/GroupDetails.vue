@@ -375,7 +375,10 @@ onMounted(async () => {
             </span>
           </div>
 
-          <div v-if="expense.created_by === user?.id" class="mt-2 flex gap-x-2">
+          <div
+            v-if="expense.created_by === user?.id || currentGroup.created_by === user?.id"
+            class="mt-2 flex gap-x-2"
+          >
             <button class="p-1 bg-electric-green/10 border-electric-green border rounded-md">
               <Edit class="stroke-electric-green size-3"></Edit>
             </button>
