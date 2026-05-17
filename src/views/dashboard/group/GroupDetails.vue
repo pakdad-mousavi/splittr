@@ -141,7 +141,34 @@ const inviteByEmail = async () => {
   }
 };
 
-const clearAllMemberDebts = () => {};
+const clearAllMemberDebts = async () => {
+  for (const member of groupMembers.value) {
+    const { error } = await supabase
+      .from('group_members')
+      .update({ pending_amount: 0 })
+      .eq('id', member.id);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+  }
+
+  for (const expense of expenses.value) {
+    const { error } = await supabase
+      .from('expenses')
+      .update({ is_split: false })
+      .eq('id', expense.id);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+  }
+
+  await updateExpenses();
+  await groupStore.updateMembers();
+};
 
 const scanReceipt = () => {};
 const splitExpensesEqually = () => {};
