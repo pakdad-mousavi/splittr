@@ -27,6 +27,7 @@ import { useProfileStore } from '@/stores/profiles';
 import AddExpenseDrawer from './drawers/AddExpense.vue';
 import SplitEquallyDrawer from './drawers/SplitEqually.vue';
 import Repeat from '@/components/icons/Repeat.vue';
+import SplitManuallyDrawer from './drawers/SplitManually.vue';
 
 // ------------------------------
 // ------------------------------
@@ -84,8 +85,11 @@ const drawerInfo = computed(() => {
         title: 'Split Expenses Equally',
         description: 'Spread the cost among all group members.',
       };
-    // case 'manual':
-    //   return ManualSplitDrawer;
+    case 'manual':
+      return {
+        title: 'Split Expenses Manually',
+        description: "Full control over each member's contribution.",
+      };
     // case 'scan':
     //   return ScanReceiptDrawer;
     default:
@@ -99,8 +103,8 @@ const drawerComponent = computed(() => {
       return AddExpenseDrawer;
     case 'splitEqual':
       return SplitEquallyDrawer;
-    // case 'manual':
-    //   return ManualSplitDrawer;
+    case 'manual':
+      return SplitManuallyDrawer;
     // case 'scan':
     //   return ScanReceiptDrawer;
     default:
@@ -295,7 +299,7 @@ onMounted(async () => {
           </button>
           <button
             class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
-            @click="dipsplayManualExpSplittingScreen"
+            @click="openDrawer('manual')"
           >
             <span class="text-xs text-electric-green">Manually</span>
           </button>
