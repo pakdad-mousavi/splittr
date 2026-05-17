@@ -5,11 +5,11 @@ import { useAuth } from '@/utils/auth';
 import type { Database } from '@/utils/database.types';
 import { analyzeReceipt } from '@/utils/functions/analyzeReceipt';
 import { supabase } from '@/utils/supabase';
-import { Camera } from '@capacitor/camera';
 import { computed, onMounted, ref, watchEffect } from 'vue';
 
 import { Capacitor } from '@capacitor/core';
 import { Filesystem } from '@capacitor/filesystem';
+import { Camera } from '@capacitor/camera';
 
 type Group = Database['public']['Tables']['groups']['Row'];
 type GroupMember = Database['public']['Tables']['group_members']['Row'];

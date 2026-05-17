@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import Group from '@/components/icons/Group.vue';
-import Minus from '@/components/icons/Minus.vue';
 import Plus from '@/components/icons/Plus.vue';
 import Profile from '@/components/icons/Profile.vue';
-import Scan from '@/components/icons/Scan.vue';
+import Invite from '@/components/icons/Invite.vue';
 
 import { RouterLink } from 'vue-router';
 import { useAuth } from '@/utils/auth';
 import { watch, ref } from 'vue';
 import { supabase } from '@/utils/supabase';
+import { useGroupStore } from '@/stores/groups';
+import { useProfileStore } from '@/stores/profiles';
+
+const groupStore = useGroupStore();
+const profileStore = useProfileStore();
+const getProfile = (id: string | undefined) => {
+  return profileStore.profiles.get(id || '');
+};
 
 const { user } = useAuth();
 const name = ref<string | null>(null);
@@ -41,26 +48,10 @@ const getTrimmedFirstname = () => {
 
     <!-- BALANCE CARD -->
     <div
-      class="from-electric-green to-electric-green/80 rounded-md p-4 flex flex-col text-sm text-cursed-black bg-linear-to-br relative mb-4"
+      class="from-electric-green to-electric-green/80 rounded-md p-4 flex flex-col text-sm text-cursed-black bg-linear-to-br relative mb-4 py-10"
     >
       <span class="uppercase font-medium">Net Balance</span>
-      <span class="font-semibold text-4xl font-playfair mb-4">RM120.00</span>
-      <hr class="opacity-20 mb-2" />
-      <div class="flex flex-wrap mb-2">
-        <div class="flex flex-1 items-center gap-x-2">
-          <Minus class="stroke-cursed-black w-4 h-4"></Minus>
-          <span>You owe</span>
-        </div>
-        <span>RM32.00</span>
-      </div>
-      <hr class="opacity-20 mb-2" />
-      <div class="flex flex-wrap mb-2">
-        <div class="flex flex-1 items-center gap-x-2">
-          <Plus class="stroke-cursed-black w-4 h-4"></Plus>
-          <span>You are owed</span>
-        </div>
-        <span>RM152.00</span>
-      </div>
+      <span class="font-semibold text-4xl font-playfair">RM120.00</span>
     </div>
 
     <!-- QUICK ACTIONS -->
@@ -81,14 +72,14 @@ const getTrimmedFirstname = () => {
         </div>
         <span class="text-2xs mt-2">GROUPS</span>
       </RouterLink>
-      <div class="flex flex-col">
+      <RouterLink class="flex flex-col" to="/invites">
         <div
           class="size-12 bg-neutral-800 rounded-md border border-electric-green/30 hover:border-electric-green duration-200 shadow flex items-center justify-center cursor-pointer"
         >
-          <Scan class="stroke-electric-green stroke-1"></Scan>
+          <Invite class="stroke-electric-green stroke-1"></Invite>
         </div>
-        <span class="text-2xs mt-2">SCAN</span>
-      </div>
+        <span class="text-2xs mt-2">INVITES</span>
+      </RouterLink>
       <RouterLink class="flex flex-col" to="/profile">
         <div
           class="size-12 bg-neutral-800 rounded-md border border-electric-green/30 hover:border-electric-green duration-200 shadow flex items-center justify-center cursor-pointer"
@@ -103,7 +94,6 @@ const getTrimmedFirstname = () => {
     <div>
       <div class="flex items-end font-playfair mb-4">
         <h3 class="text-lg flex-1">Recent Groups</h3>
-        <span class="text-sm text-electric-green underline cursor-pointer">View all</span>
       </div>
 
       <div
@@ -116,43 +106,17 @@ const getTrimmedFirstname = () => {
       <div class="space-y-2" v-else>
         <div
           class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200 rounded-md"
+          v-for="group in groupStore.groups"
         >
           <div class="flex gap-x-2">
             <div class="w-7/10">
-              <h3 class="text-sm uppercase font-semibold">College Dinner</h3>
-              <span class="text-xs text-green-100/70">22 Oct, 2026</span>
+              <h3 class="text-sm uppercase font-semibold">{{ group.name }}</h3>
+              <span class="text-xs text-green-100/70">{{ getProfile(group.created_by) }}</span>
             </div>
             <div class="w-3/10 text-right">
-              <h3 class="text-sm uppercase">RM 186.00</h3>
-              <span class="text-xs text-electric-green">Settled</span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200 rounded-md"
-        >
-          <div class="flex gap-x-2">
-            <div class="w-7/10">
-              <h3 class="text-sm uppercase font-semibold">Friendly Brunch</h3>
-              <span class="text-xs text-green-100/70">22 Oct, 2026</span>
-            </div>
-            <div class="w-3/10 text-right">
-              <h3 class="text-sm uppercase">RM 23.00</h3>
-              <span class="text-xs text-rose-500">Pending</span>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-neutral-800 p-4 border-l border-neutral-600 hover:border-electric-green duration-200 rounded-md"
-        >
-          <div class="flex gap-x-2">
-            <div class="w-7/10">
-              <h3 class="text-sm uppercase font-semibold">Afternoon Gym</h3>
-              <span class="text-xs text-green-100/70">22 Oct, 2026</span>
-            </div>
-            <div class="w-3/10 text-right">
-              <h3 class="text-sm uppercase">RM 285.00</h3>
-              <span class="text-xs text-electric-green">Settled</span>
+              <h3 class="text-sm uppercase">
+                {{ groupStore.members[group.id]?.length }} Member(s)
+              </h3>
             </div>
           </div>
         </div>

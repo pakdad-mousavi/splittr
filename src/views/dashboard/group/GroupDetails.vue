@@ -140,7 +140,7 @@ const inviteByEmail = async () => {
   }
 
   try {
-    await createInvite({ group_id: currentGroup.value.id, email: session.user.email! });
+    await createInvite({ group_id: currentGroup.value.id, email: email.value });
     emailSuccessText.value = 'Invite sent successfully!';
     emailErrorText.value = null;
     email.value = '';
@@ -178,8 +178,7 @@ const clearAllMemberDebts = async () => {
   await groupStore.updateMembers();
 };
 
-const scanReceipt = () => {};
-
+// TO BE IMPLEMENTED
 const groupName = ref('');
 const updateGroupName = () => {};
 

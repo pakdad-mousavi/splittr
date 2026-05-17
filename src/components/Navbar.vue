@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import Dashboard from './icons/Dashboard.vue';
-import Expenses from './icons/Expenses.vue';
 import Group from './icons/Group.vue';
 import Profile from './icons/Profile.vue';
+import Invite from './icons/Invite.vue';
 
 import { Capacitor } from '@capacitor/core';
 const isNative = ref(false);
@@ -38,10 +38,10 @@ onMounted(() => {
       </RouterLink>
       <RouterLink
         class="w-1/4 flex flex-col gap-1 rounded-md items-center p-1 duration-200 hover:text-yellow-50 hover:stroke-yellow-50"
-        :to="'/expenses'"
+        :to="'/invites'"
       >
-        <Expenses class="w-4 h-4 duration-200"></Expenses>
-        <span class="scale-90">Expenses</span>
+        <Invite class="w-4 h-4 duration-200"></Invite>
+        <span class="scale-90">Invites</span>
       </RouterLink>
       <RouterLink
         class="w-1/4 flex flex-col gap-1 rounded-md items-center p-1 duration-200 hover:text-yellow-50 hover:stroke-yellow-50"

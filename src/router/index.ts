@@ -32,9 +32,11 @@ const router = createRouter({
         // GROUPS
         { path: 'groups/', component: () => import('../views/dashboard/group/Groups.vue') },
         { path: 'groups/new', component: () => import('../views/dashboard/group/NewGroup.vue') },
-        // { path: 'groups/join', component: () => import('../views/dashboard/group/JoinGroup.vue') },
-        { path: 'groups/:id', component: () => import('../views/dashboard/group/GroupDetails.vue') },
-        { path: 'expenses', component: () => import('../views/dashboard/Expenses.vue') },
+        {
+          path: 'groups/:id',
+          component: () => import('../views/dashboard/group/GroupDetails.vue'),
+        },
+        { path: 'invites', component: () => import('../views/dashboard/Invites.vue') },
         { path: 'profile', component: () => import('../views/dashboard/Profile.vue') },
       ],
       meta: {
