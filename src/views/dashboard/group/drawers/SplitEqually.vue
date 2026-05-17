@@ -50,7 +50,7 @@ const splitEqually = async () => {
       .from('group_members')
       .update({
         pending_amount: member.pending_amount + amountPerMember.value,
-        joined_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .eq('id', member.id);
 
