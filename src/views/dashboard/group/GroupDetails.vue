@@ -7,6 +7,8 @@ import Invite from '@/components/icons/Invite.vue';
 import Edit from '@/components/icons/Edit.vue';
 import Email from '@/components/icons/Email.vue';
 import Trash from '@/components/icons/Trash.vue';
+import X from '@/components/icons/X.vue';
+
 import ProfileIcon from '@/components/ProfileIcon.vue';
 
 // UTILS
@@ -20,6 +22,9 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGroupStore } from '@/stores/groups';
 import { useProfileStore } from '@/stores/profiles';
+
+// DRAWERS
+import AddExpenseDrawer from './drawers/AddExpenseDrawer.vue';
 
 // ------------------------------
 // ------------------------------
@@ -54,6 +59,28 @@ const groupMemberNames = computed(() => {
   return members.map((gm) => {
     return { id: gm.user_id, name: profileStore.profiles.get(gm.user_id) || '.' };
   });
+});
+
+// ----------------
+//     DRAWERS
+// ----------------
+const activeDrawer = ref<'none' | 'addExpense' | 'splitEqual' | 'manual' | 'scan'>('none');
+const openDrawer = (drawer: typeof activeDrawer.value) => (activeDrawer.value = drawer);
+const closeDrawer = () => (activeDrawer.value = 'none');
+
+const drawerComponent = computed(() => {
+  switch (activeDrawer.value) {
+    case 'addExpense':
+      return AddExpenseDrawer;
+    // case 'splitEqual':
+    //   return SplitEqualDrawer;
+    // case 'manual':
+    //   return ManualSplitDrawer;
+    // case 'scan':
+    //   return ScanReceiptDrawer;
+    default:
+      return null;
+  }
 });
 
 // ----------------
@@ -137,8 +164,6 @@ onMounted(async () => {
   if (expensesRes.error) return;
   expenses.value = expensesRes.data.reverse();
 
-  console.log(expensesRes.data);
-
   // Get expense participants from db
   const expenseParticipantsRes = await supabase.from('expense_participants').select('*');
   if (expenseParticipantsRes.error) return;
@@ -167,7 +192,7 @@ onMounted(async () => {
       <div class="flex items-center gap-x-2">
         <button
           class="cursor-pointer active:translate-y-px duration-200 flex bg-electric-green py-2 rounded-md text-cursed-black items-center text-xs gap-x-2 w-3/4 justify-center"
-          @click="addExpense"
+          @click="openDrawer('addExpense')"
         >
           <Plus class="stroke-cursed-black size-4"></Plus>
           <span>Add Expense</span>
@@ -308,9 +333,9 @@ onMounted(async () => {
       <div class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md">
         <p class="text-xs mb-2">Group Name:</p>
         <input
-          type="email"
+          type="text"
           v-model.trim="groupName"
-          placeholder="john.doe@example.com"
+          :placeholder="currentGroup.name"
           class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-1.5 rounded-md text-xs mb-2"
         />
         <button
@@ -333,4 +358,51 @@ onMounted(async () => {
     <h2 class="text-lg font-semibold text-neutral-400">Group Not Found</h2>
     <p class="text-sm text-neutral-500 mt-2">The group you're looking for doesn't exist.</p>
   </div>
+
+  <!-- DRAWERS -->
+  <Transition name="slide-up">
+    <div
+      class="bg-neutral-950/80 backdrop-blur-lg fixed top-0 left-0 h-[calc(100vh-128px)] w-full mt-16 p-4"
+      v-if="activeDrawer !== 'none'"
+    >
+      <div class="flex w-full gap-x-2 items-center mb-4">
+        <div class="flex-1">
+          <h2 class="font-playfair text-lg">Add Expense</h2>
+          <p class="text-xs">Add a new cost to the group.</p>
+        </div>
+        <button
+          class="rounded-full bg-neutral-800 border border-electric-green size-8 flex items-center justify-center hover:bg-electric-green duration-200 group cursor-pointer"
+          @click="closeDrawer"
+        >
+          <X
+            class="stroke-electric-green size-4.5 duration-200 group-hover:stroke-cursed-black"
+          ></X>
+        </button>
+      </div>
+      <Transition name="slide-up">
+        <component :is="drawerComponent" @close="closeDrawer" :currentGroup="currentGroup" />
+      </Transition>
+    </div>
+  </Transition>
 </template>
+
+<!-- USE VUE STYLE TAG TO DEFINE ANIMATION -->
+<style>
+/* 1. Define the starting and ending state for the entering/leaving */
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateX(-100%);
+}
+
+/* 2. Define the transition timing and properties */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.7s cubic-bezier(0.37, 0, 0.62, 0.99);
+}
+
+/* 3. The 'to' state for enter and 'from' state for leave (default) */
+.slide-up-enter-to,
+.slide-up-leave-from {
+  transform: translateX(0);
+}
+</style>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import GroupCard from '@/components/GroupCard.vue';
-import Copy from '@/components/icons/Copy.vue';
 import Plus from '@/components/icons/Plus.vue';
 import Scan from '@/components/icons/Scan.vue';
 import Trash from '@/components/icons/Trash.vue';
@@ -30,24 +29,3 @@ const groupStore = useGroupStore();
     </div>
   </div>
 </template>
-
-<!-- USE VUE STYLE TAG TO DEFINE ANIMATION -->
-<style>
-/* 1. Define the starting and ending state for the entering/leaving */
-.slide-in-enter-from,
-.slide-in-leave-to {
-  transform: translateX(-100%);
-}
-
-/* 2. Define the transition timing and properties */
-.slide-in-enter-active,
-.slide-in-leave-active {
-  transition: all 0.25s ease-in-out;
-}
-
-/* 3. The 'to' state for enter and 'from' state for leave (default) */
-.slide-in-enter-to,
-.slide-in-leave-from {
-  transform: translateX(0);
-}
-</style>
