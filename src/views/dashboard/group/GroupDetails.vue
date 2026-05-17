@@ -8,6 +8,7 @@ import Edit from '@/components/icons/Edit.vue';
 import Email from '@/components/icons/Email.vue';
 import Trash from '@/components/icons/Trash.vue';
 import X from '@/components/icons/X.vue';
+import Repeat from '@/components/icons/Repeat.vue';
 
 import ProfileIcon from '@/components/ProfileIcon.vue';
 
@@ -26,7 +27,6 @@ import { useProfileStore } from '@/stores/profiles';
 // DRAWERS
 import AddExpenseDrawer from './drawers/AddExpense.vue';
 import SplitEquallyDrawer from './drawers/SplitEqually.vue';
-import Repeat from '@/components/icons/Repeat.vue';
 import SplitManuallyDrawer from './drawers/SplitManually.vue';
 
 // ------------------------------
