@@ -1,12 +1,22 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import Dashboard from './icons/Dashboard.vue';
 import Expenses from './icons/Expenses.vue';
 import Group from './icons/Group.vue';
 import Profile from './icons/Profile.vue';
+
+import { Capacitor } from '@capacitor/core';
+const isNative = ref(false);
+
+onMounted(() => {
+  const platform = Capacitor.getPlatform();
+  isNative.value = platform !== 'web';
+});
 </script>
 
 <template>
   <nav
+    :class="{ 'h-18! pb-2': isNative }"
     class="h-16 w-full fixed bottom-0 bg-cursed-black border-t border-gray-300/15 shadow-2xl shadow-electric-green/50 hover:shadow-electric-green duration-200 animate-navbar-slide-up"
   >
     <div

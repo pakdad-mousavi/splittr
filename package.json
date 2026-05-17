@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "types": "npx supabase gen types typescript --project-id \"$PROJECT_REF\" --schema public > ./src/utils/database.types.ts",
+    "update-ios-build": "npm run build && npx cap sync",
+    "open-ios-build": "npx cap open ios",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",

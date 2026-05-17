@@ -73,12 +73,12 @@ const signInWithPredefinedAccount = async (acc: PREDEFINED_ACCOUNT) => {
     <h2 class="font-playfair text-xl mb-2 text-center">Welcome Back</h2>
     <span class="text-sm text-yellow-50/70 mb-6 text-center"> Split bills. Not friendships. </span>
 
-    <p class="text-xs mb-2">Email Address:</p>
+    <p class="text-sm mb-2">Email Address:</p>
     <input
       type="email"
       v-model.trim="email"
       placeholder="john.doe@example.com"
-      class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-1.5 rounded-md text-xs mb-2"
+      class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-3 rounded-md mb-2 text-base"
     />
     <button
       class="cursor-pointer text-xs bg-electric-green hover:bg-electric-green/80 rounded-md py-1.5 text-cursed-black flex gap-x-1 justify-center active:translate-y-px duration-200"

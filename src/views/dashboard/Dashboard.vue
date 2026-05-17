@@ -4,7 +4,8 @@ import Navbar from '@/components/Navbar.vue';
 import { useGroupStore } from '@/stores/groups';
 import { useProfileStore } from '@/stores/profiles';
 import { useAuth } from '@/utils/auth';
-import { onBeforeMount } from 'vue';
+import { Capacitor } from '@capacitor/core';
+import { onBeforeMount, onMounted, ref } from 'vue';
 
 const { session } = useAuth();
 const groupStore = useGroupStore();
@@ -13,6 +14,13 @@ const profileStore = useProfileStore();
 onBeforeMount(async () => {
   await groupStore.init();
   await profileStore.init();
+});
+
+const isNative = ref(false);
+
+onMounted(() => {
+  const platform = Capacitor.getPlatform();
+  isNative.value = platform !== 'web';
 });
 </script>
 
@@ -26,7 +34,7 @@ onBeforeMount(async () => {
     ></div>
 
     <Header v-if="!!session"></Header>
-    <div class="my-16">
+    <div :class="isNative ? 'mb-18 mt-32' : 'my-16'">
       <RouterView></RouterView>
     </div>
     <Navbar></Navbar>

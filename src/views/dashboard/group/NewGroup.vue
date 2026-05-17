@@ -72,7 +72,7 @@ const createGroup = async () => {
         <input
           type="text"
           v-model="name"
-          class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-1.5 rounded-md text-xs mb-2"
+          class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-3 rounded-md text-base mb-2"
           placeholder="Ex: College Dinner"
         />
         <button
