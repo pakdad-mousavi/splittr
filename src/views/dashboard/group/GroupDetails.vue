@@ -165,10 +165,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   day: '2-digit',
 });
 
-// ----------------------
-//    EXPENSE FETCHING
-// ----------------------
-onMounted(async () => {
+const updateExpenses = async () => {
   // Initialize if not initialized yet
   await groupStore.init();
 
@@ -186,6 +183,13 @@ onMounted(async () => {
 
   if (expensesRes.error) return;
   expenses.value = expensesRes.data.reverse();
+};
+
+// ----------------------
+//    EXPENSE FETCHING
+// ----------------------
+onMounted(async () => {
+  await updateExpenses();
 });
 </script>
 
@@ -406,6 +410,7 @@ onMounted(async () => {
         <component
           :is="drawerComponent"
           @close="closeDrawer"
+          @update="updateExpenses"
           :currentGroup="currentGroup"
           :expenses="expenses"
           :totalExpenses="totalExpenses"

@@ -15,7 +15,7 @@ const props = defineProps<{
   totalExpenses: number | undefined;
 }>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'update']);
 
 const groupStore = useGroupStore();
 const profileStore = useProfileStore();
@@ -66,6 +66,7 @@ const splitEqually = async () => {
     }
   }
 
+  emit('update');
   emit('close');
 };
 
