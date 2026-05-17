@@ -1,7 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Capacitor } from '@capacitor/core';
+import { onMounted, ref } from 'vue';
+
+const isNative = ref(false);
+
+onMounted(() => {
+  const platform = Capacitor.getPlatform();
+  isNative.value = platform !== 'web';
+});
+</script>
 
 <template>
-  <div class="relative w-full pt-8 h-screen overflow-hidden px-4 flex flex-col items-center">
+  <div
+    class="relative w-full pt-8 h-screen overflow-hidden px-4 flex flex-col items-center"
+    :class="{ 'pt-20!': isNative }"
+  >
     <!-- HIGHLIGHT OVERLAYS -->
     <div class="absolute top-10 -right-10 w-30 h-30 bg-electric-green/15 blur-3xl"></div>
     <div class="absolute bottom-10 -left-10 w-30 h-30 bg-electric-green/15 blur-3xl"></div>

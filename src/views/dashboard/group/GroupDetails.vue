@@ -28,6 +28,7 @@ import { useProfileStore } from '@/stores/profiles';
 import AddExpenseDrawer from './drawers/AddExpense.vue';
 import SplitEquallyDrawer from './drawers/SplitEqually.vue';
 import SplitManuallyDrawer from './drawers/SplitManually.vue';
+import ScanReceiptDrawer from './drawers/ScanReceipt.vue';
 
 // ------------------------------
 // ------------------------------
@@ -90,8 +91,11 @@ const drawerInfo = computed(() => {
         title: 'Split Expenses Manually',
         description: "Full control over each member's contribution.",
       };
-    // case 'scan':
-    //   return ScanReceiptDrawer;
+    case 'scan':
+      return {
+        title: 'Scan Receipt',
+        description: 'Scan a receipt to get started.',
+      };
     default:
       return null;
   }
@@ -105,8 +109,8 @@ const drawerComponent = computed(() => {
       return SplitEquallyDrawer;
     case 'manual':
       return SplitManuallyDrawer;
-    // case 'scan':
-    //   return ScanReceiptDrawer;
+    case 'scan':
+      return ScanReceiptDrawer;
     default:
       return null;
   }
@@ -175,8 +179,6 @@ const clearAllMemberDebts = async () => {
 };
 
 const scanReceipt = () => {};
-const splitExpensesEqually = () => {};
-const dipsplayManualExpSplittingScreen = () => {};
 
 const groupName = ref('');
 const updateGroupName = () => {};
@@ -255,7 +257,7 @@ onMounted(async () => {
         </button>
         <button
           class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 w-1/4 justify-center"
-          @click="scanReceipt"
+          @click="openDrawer('scan')"
         >
           <Scan class="stroke-electric-green size-4"></Scan>
         </button>
