@@ -26,6 +26,7 @@ import { useProfileStore } from '@/stores/profiles';
 // DRAWERS
 import AddExpenseDrawer from './drawers/AddExpense.vue';
 import SplitEquallyDrawer from './drawers/SplitEqually.vue';
+import Repeat from '@/components/icons/Repeat.vue';
 
 // ------------------------------
 // ------------------------------
@@ -139,6 +140,8 @@ const inviteByEmail = async () => {
     console.log(err);
   }
 };
+
+const clearAllMemberDebts = () => {};
 
 const scanReceipt = () => {};
 const splitExpensesEqually = () => {};
@@ -271,11 +274,11 @@ onMounted(async () => {
           </button>
         </div>
         <button
-          class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
-          @click="dipsplayManualExpSplittingScreen"
+          class="cursor-pointer active:translate-y-px duration-200 flex border border-amber-500 py-2 rounded-md items-center gap-x-2 justify-center w-full"
+          @click="clearAllMemberDebts"
         >
-          <Scan class="size-4 stroke-electric-green"></Scan>
-          <span class="text-xs text-electric-green">Scan Receipt</span>
+          <Repeat class="size-4 stroke-amber-500"></Repeat>
+          <span class="text-xs text-amber-500">Reset All Expense Splits</span>
         </button>
       </div>
     </div>
