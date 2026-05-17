@@ -24,7 +24,7 @@ import { useGroupStore } from '@/stores/groups';
 import { useProfileStore } from '@/stores/profiles';
 
 // DRAWERS
-import AddExpenseDrawer from './drawers/AddExpenseDrawer.vue';
+import AddExpenseDrawer from './drawers/AddExpense.vue';
 
 // ------------------------------
 // ------------------------------
@@ -117,7 +117,6 @@ const inviteByEmail = async () => {
 };
 
 const scanReceipt = () => {};
-const addExpense = () => {};
 const splitExpensesEqually = () => {};
 const dipsplayManualExpSplittingScreen = () => {};
 
