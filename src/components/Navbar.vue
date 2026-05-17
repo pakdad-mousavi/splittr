@@ -17,7 +17,7 @@ onMounted(() => {
 <template>
   <nav
     :class="{ 'h-18! pb-2': isNative }"
-    class="h-16 w-full fixed bottom-0 bg-cursed-black border-t border-gray-300/15 shadow-2xl shadow-electric-green/50 hover:shadow-electric-green duration-200 animate-navbar-slide-up"
+    class="h-16 w-full fixed bottom-0 bg-cursed-black border-t border-gray-300/15 shadow-2xl shadow-electric-green/50 hover:shadow-electric-green duration-200 animate-navbar-slide-up max-w-lg"
   >
     <div
       class="flex gap-x-2 p-2 text-2xs font-montserrat uppercase text-center text-green-100/40 stroke-green-100/40 font-medium"
