@@ -25,6 +25,7 @@ import { useProfileStore } from '@/stores/profiles';
 
 // DRAWERS
 import AddExpenseDrawer from './drawers/AddExpense.vue';
+import SplitEquallyDrawer from './drawers/SplitEqually.vue';
 
 // ------------------------------
 // ------------------------------
@@ -38,9 +39,6 @@ const router = useRouter();
 
 type Expense = Database['public']['Tables']['expenses']['Row'];
 const expenses = ref<Expense[]>([]);
-
-type ExpenseParticipant = Database['public']['Tables']['expense_participants']['Row'];
-const expenseParticipants = ref<ExpenseParticipant[]>([]);
 
 // Computed values
 const currentGroup = computed(() => {
@@ -61,6 +59,11 @@ const groupMemberNames = computed(() => {
   });
 });
 
+const totalExpenses = computed(() => {
+  if (!expenses.value) return;
+  return expenses.value.reduce((acc, exp) => acc + exp.total_amount, 0);
+});
+
 // ----------------
 //     DRAWERS
 // ----------------
@@ -68,12 +71,33 @@ const activeDrawer = ref<'none' | 'addExpense' | 'splitEqual' | 'manual' | 'scan
 const openDrawer = (drawer: typeof activeDrawer.value) => (activeDrawer.value = drawer);
 const closeDrawer = () => (activeDrawer.value = 'none');
 
+const drawerInfo = computed(() => {
+  switch (activeDrawer.value) {
+    case 'addExpense':
+      return {
+        title: 'Add Expense',
+        description: 'Add a new cost to the group.',
+      };
+    case 'splitEqual':
+      return {
+        title: 'Split Expenses Equally',
+        description: 'Spread the cost among all group members.',
+      };
+    // case 'manual':
+    //   return ManualSplitDrawer;
+    // case 'scan':
+    //   return ScanReceiptDrawer;
+    default:
+      return null;
+  }
+});
+
 const drawerComponent = computed(() => {
   switch (activeDrawer.value) {
     case 'addExpense':
       return AddExpenseDrawer;
-    // case 'splitEqual':
-    //   return SplitEqualDrawer;
+    case 'splitEqual':
+      return SplitEquallyDrawer;
     // case 'manual':
     //   return ManualSplitDrawer;
     // case 'scan':
@@ -162,11 +186,6 @@ onMounted(async () => {
 
   if (expensesRes.error) return;
   expenses.value = expensesRes.data.reverse();
-
-  // Get expense participants from db
-  const expenseParticipantsRes = await supabase.from('expense_participants').select('*');
-  if (expenseParticipantsRes.error) return;
-  expenseParticipants.value = expenseParticipantsRes.data;
 });
 </script>
 
@@ -236,7 +255,7 @@ onMounted(async () => {
         <div class="flex gap-x-2 mb-2">
           <button
             class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
-            @click="splitExpensesEqually"
+            @click="openDrawer('splitEqual')"
           >
             <span class="text-xs text-electric-green">Equally</span>
           </button>
@@ -264,7 +283,12 @@ onMounted(async () => {
 
     <!-- EXPENSE FEED -->
     <div class="mb-8">
-      <h4 class="font-playfair mb-2">Expense Feed:</h4>
+      <div class="flex items-end mb-2">
+        <h4 class="font-playfair flex-1">Expense Feed:</h4>
+        <span class="text-electric-green text-sm"
+          >Total: {{ currencyFormatter.format(totalExpenses || 0) }}</span
+        >
+      </div>
       <div class="flex flex-col gap-4">
         <div
           class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md"
@@ -361,13 +385,13 @@ onMounted(async () => {
   <!-- DRAWERS -->
   <Transition name="slide-up">
     <div
-      class="bg-neutral-950/80 backdrop-blur-lg fixed top-0 left-0 h-[calc(100vh-128px)] w-full mt-16 p-4"
+      class="bg-neutral-950/80 backdrop-blur-lg fixed top-0 left-0 h-[calc(100vh-128px)] w-full mt-16 p-4 overflow-y-scroll"
       v-if="activeDrawer !== 'none'"
     >
       <div class="flex w-full gap-x-2 items-center mb-4">
         <div class="flex-1">
-          <h2 class="font-playfair text-lg">Add Expense</h2>
-          <p class="text-xs">Add a new cost to the group.</p>
+          <h2 class="font-playfair text-lg">{{ drawerInfo?.title }}</h2>
+          <p class="text-xs">{{ drawerInfo?.description }}</p>
         </div>
         <button
           class="rounded-full bg-neutral-800 border border-electric-green size-8 flex items-center justify-center hover:bg-electric-green duration-200 group cursor-pointer"
@@ -379,7 +403,13 @@ onMounted(async () => {
         </button>
       </div>
       <Transition name="slide-up">
-        <component :is="drawerComponent" @close="closeDrawer" :currentGroup="currentGroup" />
+        <component
+          :is="drawerComponent"
+          @close="closeDrawer"
+          :currentGroup="currentGroup"
+          :expenses="expenses"
+          :totalExpenses="totalExpenses"
+        />
       </Transition>
     </div>
   </Transition>
