@@ -38,6 +38,10 @@
 }
 
 @layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
     @apply text-yellow-50 font-montserrat bg-cursed-black;
   }

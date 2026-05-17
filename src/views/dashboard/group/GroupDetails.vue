@@ -180,12 +180,12 @@ onMounted(async () => {
           {{ currentGroup.name }}
         </h3>
         <div class="flex gap-x-2">
-          <button class="cursor-pointer" @click="$router.push(`/groups/${currentGroup.id}#invite`)">
+          <a href="#invite" class="cursor-pointer">
             <Invite class="stroke-electric-green size-5"></Invite>
-          </button>
-          <button class="cursor-pointer" @click="$router.push(`/groups/${currentGroup.id}#edit`)">
+          </a>
+          <a href="#edit" class="cursor-pointer">
             <Edit class="stroke-electric-green size-5"></Edit>
-          </button>
+          </a>
         </div>
       </div>
 
