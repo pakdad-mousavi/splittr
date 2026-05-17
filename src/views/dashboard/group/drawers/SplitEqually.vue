@@ -48,7 +48,10 @@ const splitEqually = async () => {
   for (const member of groupMembers.value) {
     const { error } = await supabase
       .from('group_members')
-      .update({ pending_amount: member.pending_amount + amountPerMember.value })
+      .update({
+        pending_amount: member.pending_amount + amountPerMember.value,
+        joined_at: new Date().toISOString(),
+      })
       .eq('id', member.id);
 
     if (error) {
