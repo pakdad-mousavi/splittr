@@ -163,7 +163,6 @@ const getProfile = (id: string | undefined) => {
 <template>
   <div>
     <div v-if="!analyzed">
-      {{ base64Image }}
       <label
         class="w-full h-40 border border-neutral-600 bg-neutral-800 rounded-md flex items-center justify-center text-center cursor-pointer font-playfair text-lg mb-4"
         @click="isNative ? handleFileUpload() : ''"
