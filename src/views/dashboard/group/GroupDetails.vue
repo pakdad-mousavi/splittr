@@ -48,14 +48,14 @@ const currentGroup = computed(() => {
   return groupStore.groups.find((g) => g.id === Number(currentGroupId));
 });
 
-const groupMemberNames = computed(() => {
+const groupMembers = computed(() => {
   if (!currentGroup.value) return [];
 
   const members = groupStore.members[currentGroup.value.id];
   if (!members) return [];
 
   return members.map((gm) => {
-    return { id: gm.user_id, name: profileStore.profiles.get(gm.user_id) || '.' };
+    return { ...gm, name: profileStore.profiles.get(gm.user_id) || '.' };
   });
 });
 
@@ -165,6 +165,9 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   day: '2-digit',
 });
 
+// ----------------------
+//    EXPENSE FETCHING
+// ----------------------
 const updateExpenses = async () => {
   // Initialize if not initialized yet
   await groupStore.init();
@@ -185,9 +188,6 @@ const updateExpenses = async () => {
   expenses.value = expensesRes.data.reverse();
 };
 
-// ----------------------
-//    EXPENSE FETCHING
-// ----------------------
 onMounted(async () => {
   await updateExpenses();
 });
@@ -237,15 +237,15 @@ onMounted(async () => {
           <div class="flex overflow-x-scroll gap-x-1 min-h-6">
             <ProfileIcon
               class="min-w-6"
-              :class="{ 'order-first': member.id === currentGroup.created_by }"
-              :borderStyle="member.id === currentGroup.created_by ? 'on' : 'dim'"
+              :class="{ 'order-first': member.user_id === currentGroup.created_by }"
+              :borderStyle="member.user_id === currentGroup.created_by ? 'on' : 'dim'"
               :initial="member.name.slice(0, 1)"
-              v-for="member in groupMemberNames"
+              v-for="member in groupMembers"
             ></ProfileIcon>
           </div>
         </div>
         <span class="font-montserrat text-yellow-50/60 text-xs"
-          >{{ groupMemberNames.length }} total</span
+          >{{ groupMembers.length }} total</span
         >
       </div>
 
@@ -280,9 +280,33 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- CURRENT SETTLEMENTS -->
+    <!-- DEBT PER MEMBER -->
     <div class="mb-8">
-      <h4 class="font-playfair mb-2">Current Settlements:</h4>
+      <h4 class="font-playfair mb-2">Remaining Debt Per Member:</h4>
+      <div class="flex flex-col gap-y-4">
+        <div
+          class="border border-neutral-600 bg-neutral-800 p-4 rounded-md"
+          v-for="member in groupMembers"
+        >
+          <div class="text-sm flex">
+            <div class="flex-1 flex flex-col">
+              <span class="font-medium">{{ member.name }}</span>
+              <span class="text-yellow-50/60 text-xs">
+                Last updated at {{ dateFormatter.format(new Date(member.updated_at)) }}
+              </span>
+            </div>
+            <div class="flex flex-col items-end">
+              <span>{{ currencyFormatter.format(member.pending_amount) }}</span>
+              <span
+                class="text-xs"
+                :class="member.pending_amount === 0 ? 'text-electric-green' : 'text-rose-500'"
+              >
+                {{ member.pending_amount === 0 ? 'Settled' : 'Pending' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- EXPENSE FEED -->
