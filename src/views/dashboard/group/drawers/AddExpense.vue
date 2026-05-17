@@ -10,7 +10,7 @@ const props = defineProps<{
   currentGroup: Group | undefined;
 }>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'update']);
 
 const { user } = useAuth();
 
@@ -42,6 +42,7 @@ const createExpense = async () => {
     return;
   }
 
+  emit('update');
   emit('close');
 };
 </script>
