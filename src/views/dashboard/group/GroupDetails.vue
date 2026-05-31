@@ -19,7 +19,7 @@ import { useAuth } from '@/utils/auth';
 import { supabase } from '@/utils/supabase';
 
 // VUE
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGroupStore } from '@/stores/groups';
 import { useProfileStore } from '@/stores/profiles';
@@ -73,6 +73,14 @@ const totalExpenses = computed(() => {
 const activeDrawer = ref<'none' | 'addExpense' | 'splitEqual' | 'manual' | 'scan'>('none');
 const openDrawer = (drawer: typeof activeDrawer.value) => (activeDrawer.value = drawer);
 const closeDrawer = () => (activeDrawer.value = 'none');
+
+watch(activeDrawer, (active) => {
+  if (active !== 'none') {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'scroll';
+  }
+});
 
 const drawerInfo = computed(() => {
   switch (activeDrawer.value) {
@@ -229,257 +237,261 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="currentGroup" class="p-4">
-    <!-- GROUP DETAILS -->
-    <div class="p-4 bg-neutral-800 border border-neutral-600 flex flex-col rounded-md mb-4">
-      <div class="flex mb-4">
-        <h3 class="text-xl font-semibold mb-1 flex-1">
-          {{ currentGroup.name }}
-        </h3>
-        <div class="flex gap-x-2">
-          <a href="#invite" class="cursor-pointer">
-            <Invite class="stroke-electric-green size-5"></Invite>
-          </a>
-          <a href="#edit" class="cursor-pointer">
-            <Edit class="stroke-electric-green size-5"></Edit>
-          </a>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-x-2">
-        <button
-          class="cursor-pointer active:translate-y-px duration-200 flex bg-electric-green py-2 rounded-md text-cursed-black items-center text-xs gap-x-2 w-3/4 justify-center"
-          @click="openDrawer('addExpense')"
-        >
-          <Plus class="stroke-cursed-black size-4"></Plus>
-          <span>Add Expense</span>
-        </button>
-        <button
-          class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 w-1/4 justify-center"
-          @click="openDrawer('scan')"
-        >
-          <Scan class="stroke-electric-green size-4"></Scan>
-        </button>
-      </div>
-
-      <!-- MEMBERS -->
-      <div class="mt-4">
-        <div class="flex gap-x-4">
-          <div class="flex gap-x-2 items-center">
-            <Group class="stroke-yellow-50 size-4"></Group>
-            <h4 class="font-playfair">Members:</h4>
-          </div>
-          <div class="flex overflow-x-scroll gap-x-1 min-h-6">
-            <ProfileIcon
-              class="min-w-6"
-              :class="{ 'order-first': member.user_id === currentGroup.created_by }"
-              :borderStyle="member.user_id === currentGroup.created_by ? 'on' : 'dim'"
-              :initial="member.name.slice(0, 1)"
-              v-for="member in groupMembers"
-            ></ProfileIcon>
+  <div class="overflow-hidden max-w-lg relative">
+    <div v-if="currentGroup" class="p-4">
+      <!-- GROUP DETAILS -->
+      <div class="p-4 bg-neutral-800 border border-neutral-600 flex flex-col rounded-md mb-4">
+        <div class="flex mb-4">
+          <h3 class="text-xl font-semibold mb-1 flex-1">
+            {{ currentGroup.name }}
+          </h3>
+          <div class="flex gap-x-2">
+            <a href="#invite" class="cursor-pointer">
+              <Invite class="stroke-electric-green size-5"></Invite>
+            </a>
+            <a href="#edit" class="cursor-pointer">
+              <Edit class="stroke-electric-green size-5"></Edit>
+            </a>
           </div>
         </div>
-        <span class="font-montserrat text-yellow-50/60 text-xs"
-          >{{ groupMembers.length }} total</span
-        >
-      </div>
 
-      <!-- ACTION CENTER -->
-      <div
-        class="my-6 bg-linear-to-r from-transparent via-neutral-500 h-0.5 w-full"
-        v-if="user?.id === currentGroup.created_by"
-      ></div>
-      <div v-if="user?.id === currentGroup.created_by">
-        <p class="text-sm mb-2">Split Expenses:</p>
-        <div class="flex gap-x-2 mb-2">
+        <div class="flex items-center gap-x-2">
           <button
-            class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
-            @click="openDrawer('splitEqual')"
+            class="cursor-pointer active:translate-y-px duration-200 flex bg-electric-green py-2 rounded-md text-cursed-black items-center text-xs gap-x-2 w-3/4 justify-center"
+            @click="openDrawer('addExpense')"
           >
-            <span class="text-xs text-electric-green">Equally</span>
+            <Plus class="stroke-cursed-black size-4"></Plus>
+            <span>Add Expense</span>
           </button>
           <button
-            class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
-            @click="openDrawer('manual')"
+            class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 w-1/4 justify-center"
+            @click="openDrawer('scan')"
           >
-            <span class="text-xs text-electric-green">Manually</span>
+            <Scan class="stroke-electric-green size-4"></Scan>
           </button>
         </div>
-        <button
-          class="cursor-pointer active:translate-y-px duration-200 flex border border-amber-500 py-2 rounded-md items-center gap-x-2 justify-center w-full"
-          @click="clearAllMemberDebts"
-        >
-          <Repeat class="size-4 stroke-amber-500"></Repeat>
-          <span class="text-xs text-amber-500">Reset All Expense Splits</span>
-        </button>
-      </div>
-    </div>
 
-    <!-- DEBT PER MEMBER -->
-    <div class="mb-8">
-      <h4 class="font-playfair mb-2">Remaining Debt Per Member:</h4>
-      <div class="flex flex-col gap-y-4">
-        <div
-          class="border border-neutral-600 bg-neutral-800 p-4 rounded-md"
-          v-for="member in groupMembers"
-        >
-          <div class="text-sm flex">
-            <div class="flex-1 flex flex-col">
-              <span class="font-medium">{{ member.name }}</span>
-              <span class="text-yellow-50/60 text-xs">
-                Last updated at {{ dateFormatter.format(new Date(member.updated_at)) }}
-              </span>
+        <!-- MEMBERS -->
+        <div class="mt-4">
+          <div class="flex gap-x-4">
+            <div class="flex gap-x-2 items-center">
+              <Group class="stroke-yellow-50 size-4"></Group>
+              <h4 class="font-playfair">Members:</h4>
             </div>
-            <div class="flex flex-col items-end">
-              <span>{{ currencyFormatter.format(member.pending_amount) }}</span>
-              <span
-                class="text-xs"
-                :class="member.pending_amount === 0 ? 'text-electric-green' : 'text-rose-500'"
-              >
-                {{ member.pending_amount === 0 ? 'Settled' : 'Pending' }}
-              </span>
+            <div class="flex overflow-x-scroll gap-x-1 min-h-6">
+              <ProfileIcon
+                class="min-w-6"
+                :class="{ 'order-first': member.user_id === currentGroup.created_by }"
+                :borderStyle="member.user_id === currentGroup.created_by ? 'on' : 'dim'"
+                :initial="member.name.slice(0, 1)"
+                v-for="member in groupMembers"
+              ></ProfileIcon>
             </div>
           </div>
+          <span class="font-montserrat text-yellow-50/60 text-xs"
+            >{{ groupMembers.length }} total</span
+          >
+        </div>
+
+        <!-- ACTION CENTER -->
+        <div
+          class="my-6 bg-linear-to-r from-transparent via-neutral-500 h-0.5 w-full"
+          v-if="user?.id === currentGroup.created_by"
+        ></div>
+        <div v-if="user?.id === currentGroup.created_by">
+          <p class="text-sm mb-2">Split Expenses:</p>
+          <div class="flex gap-x-2 mb-2">
+            <button
+              class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
+              @click="openDrawer('splitEqual')"
+            >
+              <span class="text-xs text-electric-green">Equally</span>
+            </button>
+            <button
+              class="cursor-pointer active:translate-y-px duration-200 flex border border-electric-green py-2 rounded-md items-center gap-x-2 justify-center w-full"
+              @click="openDrawer('manual')"
+            >
+              <span class="text-xs text-electric-green">Manually</span>
+            </button>
+          </div>
+          <button
+            class="cursor-pointer active:translate-y-px duration-200 flex border border-amber-500 py-2 rounded-md items-center gap-x-2 justify-center w-full"
+            @click="clearAllMemberDebts"
+          >
+            <Repeat class="size-4 stroke-amber-500"></Repeat>
+            <span class="text-xs text-amber-500">Reset All Expense Splits</span>
+          </button>
         </div>
       </div>
-    </div>
 
-    <!-- EXPENSE FEED -->
-    <div class="mb-8">
-      <div class="flex items-end mb-2">
-        <h4 class="font-playfair flex-1">Expense Feed:</h4>
-        <span class="text-electric-green text-sm"
-          >Total: {{ currencyFormatter.format(totalExpenses || 0) }}</span
-        >
-      </div>
-      <div class="flex flex-col gap-4">
-        <div
-          class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md"
-          v-for="expense in expenses"
-        >
-          <div class="flex text-sm gap-x-2">
-            <div class="flex-1">
-              <h4 class="font-medium">
-                {{ expense.title.length > 18 ? expense.title.slice(0, 19) + '...' : expense.title }}
-              </h4>
-            </div>
-            <span class="text-electric-green">{{
-              currencyFormatter.format(expense.total_amount)
-            }}</span>
-          </div>
-          <div class="text-xs mt-1 flex w-full items-center text-yellow-50/60">
-            <span class="flex-1">
-              Created by {{ profileStore.profiles.get(expense.created_by)?.split(' ')[0] }}
-            </span>
-            <span>
-              {{ dateFormatter.format(new Date(expense.created_at)) }}
-            </span>
-          </div>
-
+      <!-- DEBT PER MEMBER -->
+      <div class="mb-8">
+        <h4 class="font-playfair mb-2">Remaining Debt Per Member:</h4>
+        <div class="flex flex-col gap-y-4">
           <div
-            v-if="expense.created_by === user?.id || currentGroup.created_by === user?.id"
-            class="mt-2 flex gap-x-2"
+            class="border border-neutral-600 bg-neutral-800 p-4 rounded-md"
+            v-for="member in groupMembers"
           >
-            <button class="p-1 bg-electric-green/10 border-electric-green border rounded-md">
-              <Edit class="stroke-electric-green size-3"></Edit>
-            </button>
-            <button class="p-1 bg-rose-500/10 border-rose-500 border rounded-md">
-              <Trash class="stroke-rose-500 size-3"></Trash>
-            </button>
+            <div class="text-sm flex">
+              <div class="flex-1 flex flex-col">
+                <span class="font-medium">{{ member.name }}</span>
+                <span class="text-yellow-50/60 text-xs">
+                  Last updated at {{ dateFormatter.format(new Date(member.updated_at)) }}
+                </span>
+              </div>
+              <div class="flex flex-col items-end">
+                <span>{{ currencyFormatter.format(member.pending_amount) }}</span>
+                <span
+                  class="text-xs"
+                  :class="member.pending_amount === 0 ? 'text-electric-green' : 'text-rose-500'"
+                >
+                  {{ member.pending_amount === 0 ? 'Settled' : 'Pending' }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- INVITE MEMBERS -->
-    <div class="mb-8" id="invite">
-      <h4 class="font-playfair mb-2">Invite By Email:</h4>
-      <div class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md">
-        <p class="text-xs mb-2">Email Address:</p>
-        <input
-          type="email"
-          v-model.trim="email"
-          placeholder="john.doe@example.com"
-          class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-3 rounded-md text-base mb-2"
-        />
-        <button
-          class="cursor-pointer text-xs bg-electric-green hover:bg-electric-green/80 rounded-md py-1.5 text-cursed-black flex gap-x-1 justify-center active:translate-y-px duration-200"
-          @click="inviteByEmail"
-        >
-          <Email class="stroke-cursed-black w-4 h-4 stroke-1!"></Email>
-          <span class="">Invite with Email</span>
-        </button>
-        <p class="text-rose-500 text-xs mt-2" v-if="emailErrorText">{{ emailErrorText }}</p>
-        <p class="text-electric-green text-xs mt-2" v-if="emailSuccessText">
-          {{ emailSuccessText }}
-        </p>
-      </div>
-    </div>
-
-    <!-- EDIT GROUP -->
-    <div class="mb-8" id="edit">
-      <h4 class="font-playfair mb-2">Edit Group:</h4>
-      <div class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md">
-        <p class="text-xs mb-2">Group Name:</p>
-        <input
-          type="text"
-          v-model.trim="groupName"
-          :placeholder="currentGroup.name"
-          class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-3 rounded-md text-base mb-2"
-        />
-        <button
-          class="cursor-pointer text-xs bg-electric-green hover:bg-electric-green/80 rounded-md py-1.5 text-cursed-black flex gap-x-1 justify-center active:translate-y-px duration-200"
-          @click="updateGroupName"
-        >
-          <span class="">Update Group Name</span>
-        </button>
-        <button
-          class="cursor-pointer active:translate-y-px duration-200 flex border border-rose-500 py-2 rounded-md text-rose-500 items-center text-xs gap-x-2 w-full justify-center mt-2"
-          @click="deleteGroup"
-        >
-          <Trash class="stroke-rose-500 stroke-1 size-4"></Trash>
-          <span>Delete Group</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div v-else class="p-4 flex flex-col items-center justify-center text-center">
-    <h2 class="text-lg font-semibold text-neutral-400">Group Not Found</h2>
-    <p class="text-sm text-neutral-500 mt-2">The group you're looking for doesn't exist.</p>
-  </div>
-
-  <!-- DRAWERS -->
-  <Transition name="slide-up">
-    <div
-      class="bg-neutral-950/80 backdrop-blur-lg fixed top-0 left-0 h-[calc(100vh-128px)] w-full mt-16 p-4 overflow-y-scroll"
-      v-if="activeDrawer !== 'none'"
-    >
-      <div class="flex w-full gap-x-2 items-center mb-4">
-        <div class="flex-1">
-          <h2 class="font-playfair text-lg">{{ drawerInfo?.title }}</h2>
-          <p class="text-xs">{{ drawerInfo?.description }}</p>
+      <!-- EXPENSE FEED -->
+      <div class="mb-8">
+        <div class="flex items-end mb-2">
+          <h4 class="font-playfair flex-1">Expense Feed:</h4>
+          <span class="text-electric-green text-sm"
+            >Total: {{ currencyFormatter.format(totalExpenses || 0) }}</span
+          >
         </div>
-        <button
-          class="rounded-full bg-neutral-800 border border-electric-green size-8 flex items-center justify-center hover:bg-electric-green duration-200 group cursor-pointer"
-          @click="closeDrawer"
-        >
-          <X
-            class="stroke-electric-green size-4.5 duration-200 group-hover:stroke-cursed-black"
-          ></X>
-        </button>
+        <div class="flex flex-col gap-4">
+          <div
+            class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md"
+            v-for="expense in expenses"
+          >
+            <div class="flex text-sm gap-x-2">
+              <div class="flex-1">
+                <h4 class="font-medium">
+                  {{
+                    expense.title.length > 18 ? expense.title.slice(0, 19) + '...' : expense.title
+                  }}
+                </h4>
+              </div>
+              <span class="text-electric-green">{{
+                currencyFormatter.format(expense.total_amount)
+              }}</span>
+            </div>
+            <div class="text-xs mt-1 flex w-full items-center text-yellow-50/60">
+              <span class="flex-1">
+                Created by {{ profileStore.profiles.get(expense.created_by)?.split(' ')[0] }}
+              </span>
+              <span>
+                {{ dateFormatter.format(new Date(expense.created_at)) }}
+              </span>
+            </div>
+
+            <div
+              v-if="expense.created_by === user?.id || currentGroup.created_by === user?.id"
+              class="mt-2 flex gap-x-2"
+            >
+              <button class="p-1 bg-electric-green/10 border-electric-green border rounded-md">
+                <Edit class="stroke-electric-green size-3"></Edit>
+              </button>
+              <button class="p-1 bg-rose-500/10 border-rose-500 border rounded-md">
+                <Trash class="stroke-rose-500 size-3"></Trash>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <Transition name="slide-up">
-        <component
-          :is="drawerComponent"
-          @close="closeDrawer"
-          @update="updateExpenses"
-          :currentGroup="currentGroup"
-          :expenses="expenses"
-          :totalExpenses="totalExpenses"
-        />
-      </Transition>
+
+      <!-- INVITE MEMBERS -->
+      <div class="mb-8" id="invite">
+        <h4 class="font-playfair mb-2">Invite By Email:</h4>
+        <div class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md">
+          <p class="text-xs mb-2">Email Address:</p>
+          <input
+            type="email"
+            v-model.trim="email"
+            placeholder="john.doe@example.com"
+            class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-3 rounded-md text-base mb-2"
+          />
+          <button
+            class="cursor-pointer text-xs bg-electric-green hover:bg-electric-green/80 rounded-md py-1.5 text-cursed-black flex gap-x-1 justify-center active:translate-y-px duration-200"
+            @click="inviteByEmail"
+          >
+            <Email class="stroke-cursed-black w-4 h-4 stroke-1!"></Email>
+            <span class="">Invite with Email</span>
+          </button>
+          <p class="text-rose-500 text-xs mt-2" v-if="emailErrorText">{{ emailErrorText }}</p>
+          <p class="text-electric-green text-xs mt-2" v-if="emailSuccessText">
+            {{ emailSuccessText }}
+          </p>
+        </div>
+      </div>
+
+      <!-- EDIT GROUP -->
+      <div class="mb-8" id="edit">
+        <h4 class="font-playfair mb-2">Edit Group:</h4>
+        <div class="flex flex-col p-4 bg-neutral-800 border-neutral-600 border rounded-md">
+          <p class="text-xs mb-2">Group Name:</p>
+          <input
+            type="text"
+            v-model.trim="groupName"
+            :placeholder="currentGroup.name"
+            class="focus:border-electric-green/30 outline-none w-full border-neutral-700 border border-md p-3 rounded-md text-base mb-2"
+          />
+          <button
+            class="cursor-pointer text-xs bg-electric-green hover:bg-electric-green/80 rounded-md py-1.5 text-cursed-black flex gap-x-1 justify-center active:translate-y-px duration-200"
+            @click="updateGroupName"
+          >
+            <span class="">Update Group Name</span>
+          </button>
+          <button
+            class="cursor-pointer active:translate-y-px duration-200 flex border border-rose-500 py-2 rounded-md text-rose-500 items-center text-xs gap-x-2 w-full justify-center mt-2"
+            @click="deleteGroup"
+          >
+            <Trash class="stroke-rose-500 stroke-1 size-4"></Trash>
+            <span>Delete Group</span>
+          </button>
+        </div>
+      </div>
     </div>
-  </Transition>
+    <div v-else class="p-4 flex flex-col items-center justify-center text-center">
+      <h2 class="text-lg font-semibold text-neutral-400">Group Not Found</h2>
+      <p class="text-sm text-neutral-500 mt-2">The group you're looking for doesn't exist.</p>
+    </div>
+
+    <!-- DRAWERS -->
+    <Transition name="slide-up">
+      <div
+        class="bg-neutral-950/80 backdrop-blur-lg absolute top-0 left-1/2 -translate-x-1/2 h-[calc(100vh-128px)] w-full p-4 overflow-y-scroll max-w-lg"
+        v-if="activeDrawer !== 'none'"
+      >
+        <div class="flex w-full gap-x-2 items-center mb-4">
+          <div class="flex-1">
+            <h2 class="font-playfair text-lg">{{ drawerInfo?.title }}</h2>
+            <p class="text-xs">{{ drawerInfo?.description }}</p>
+          </div>
+          <button
+            class="rounded-full bg-neutral-800 border border-electric-green size-8 flex items-center justify-center hover:bg-electric-green duration-200 group cursor-pointer"
+            @click="closeDrawer"
+          >
+            <X
+              class="stroke-electric-green size-4.5 duration-200 group-hover:stroke-cursed-black"
+            ></X>
+          </button>
+        </div>
+        <Transition name="slide-up">
+          <component
+            :is="drawerComponent"
+            @close="closeDrawer"
+            @update="updateExpenses"
+            :currentGroup="currentGroup"
+            :expenses="expenses"
+            :totalExpenses="totalExpenses"
+          />
+        </Transition>
+      </div>
+    </Transition>
+  </div>
 </template>
 
 <!-- USE VUE STYLE TAG TO DEFINE ANIMATION -->

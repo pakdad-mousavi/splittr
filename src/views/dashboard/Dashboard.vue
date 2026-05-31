@@ -25,7 +25,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col h-full relative max-w-lg mx-auto">
+  <div class="min-h-screen flex flex-col h-full relative max-w-lg mx-auto overflow-hidden">
     <div
       class="absolute top-20 -right-10 w-30 h-30 bg-electric-green/10 blur-3xl z-1000 pointer-events-none"
     ></div>
