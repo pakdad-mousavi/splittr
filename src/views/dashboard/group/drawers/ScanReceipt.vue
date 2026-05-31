@@ -189,8 +189,10 @@ const getProfile = (id: string | undefined) => {
     <div v-else>
       <table class="text-sm w-full border border-neutral-600 text-left mb-4">
         <thead>
-          <th class="bg-neutral-600/50 p-2">Item Name</th>
-          <th class="bg-neutral-600/50 p-2">Amount</th>
+          <tr>
+            <th class="bg-neutral-600/50 p-2">Item Name</th>
+            <th class="bg-neutral-600/50 p-2">Amount</th>
+          </tr>
         </thead>
 
         <tbody>
