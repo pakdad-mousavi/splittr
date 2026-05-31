@@ -1,98 +1,65 @@
 # Splittr
 
-A lightweight bill‑splitting app built with Vue 3 + Vite, Pinia, Supabase and packaged with Capacitor for mobile.
+Splittr is an expense splitting, progressive web app (PWA), designed primarily as a mobile application. "But you're using VueJs and Tailwind! How is this going to run on my phone outside the browser?!"
 
----
+Well, Capacitor allows me to bundle my entire dist folder as a Swift project, while also giving me access to native iphone APIs so that I can actually use the phone's unique stuff, such as the native Camera during receipt scanning!
 
-## Quick overview
+Now lets talk stack
 
-- Frontend: Vue 3 (script-setup, TypeScript), Vite
-- State: Pinia (see [src/stores](src/stores))
-- Backend & Auth: Supabase (Postgres + Auth)
-- Mobile: Capacitor (see `capacitor.config.ts` and the `ios/` folder)
+## Tech Stack
+- VueJs
+- TailwindCss
+- Supabase
+- Capacitor
 
-## Key files and locations
+Yes, thats basically my tech stack.
 
-- Group view and expense UI: [src/views/dashboard/group/GroupDetails.vue](src/views/dashboard/group/GroupDetails.vue)
-- Drawers (add expense / split / scan): [src/views/dashboard/group/drawers](src/views/dashboard/group/drawers)
-- Stores: [src/stores/groups.ts](src/stores/groups.ts), [src/stores/profiles.ts](src/stores/profiles.ts)
-- DB typings: [src/utils/database.types.ts](src/utils/database.types.ts)
-- Supabase client: [src/utils/supabase.ts](src/utils/supabase.ts)
+Also yes, I'm calling the database directly from your client, SECURELY, thanks to Supabase's row level security (RLS).
 
-## How to run (web)
+## Features
+1. **Group Creation:** You can create groups, and then invite your friends to said group! Then, add and split as many expenses as your heart desires.
 
-1. Install dependencies
+2. **Expense Creation:** You can create expenses (duh)! Add expenses to your gorup to later be split amongst them.
 
-```bash
+3. **The Splits:** Enjoy up to 3 different ways to split any/all expenses. Either split equally amongst all group members, or split manually (great when someone basically wants to order the entire restaurant), or split via bill scanning (more on that later).
+
+4. **Scan the Bill:** Don't want to enter each bill item by hand? That's alright, just scan the bill with Splittr and choose which group member ordered. Press "Confirm", and the bill is in fact, split.
+
+## Running Locally
+To run locally, you will need to set up supabase following the local database types. For the env, you'll need:
+
+```
+VITE_SUPABASE_URL=xxxx
+VITE_SUPABASE_PUBLISHABLE_KEY=xxxx
+```
+
+And that's it! Just run these commands:
+
+```
 npm install
-```
-
-2. Provide environment variables (create a `.env` file at project root):
-
-- `VITE_SUPABASE_URL` — your Supabase URL
-- `VITE_SUPABASE_ANON_KEY` — your Supabase anon/public key
-
-Example `.env` (do not commit keys):
-
-```env
-VITE_SUPABASE_URL=https://xyzcompany.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...your_key_here
-```
-
-3. Run dev server
-
-```bash
 npm run dev
 ```
 
-4. Build for production
+and you're project should be up and running. :)
 
-```bash
-npm run build
-npm run preview  # optional local preview
+## Running on iOS / Android:
+Since Capacitor provides both an android and iOS runtime, you should be able to bundle the app for either target.
+
+For iOS, just run the following:
+
+```
+npm run update-ios-build
+npm run open-ios-build
 ```
 
-## How to run on iOS (Capacitor)
+This will build the project into a buncha static files, then Capacitor will bundle it for iOS, and then finally, will open the bundle in XCode to be ran.
 
-1. Build web assets
+Unfortunately, since I'm on Mac, I couldn't test nor set up an Android runtime ;-; but given you don't face any ridiculous errors, it should work fine on android as well.
 
-```bash
-npm run build
-```
+## Demos
+Okay SO. Considering that not everyone has an iphone and that not everyone is going to be willing to build the project, I've recorded a short demo of the app running on my phone:
 
-2. Sync and open in Xcode
+[Demo Link](https://drive.google.com/file/d/1WNVobutj3XbZb95IQO9THOMksE20HxxD/view?usp=sharing)
 
-```bash
-npx cap sync ios
-npx cap open ios
-```
+Check it out!
 
-Open the Xcode workspace in `ios/App/App.xcodeproj` and run on a simulator/device.
-
-## Database schema notes
-
-The project uses Supabase/Postgres. See `src/utils/database.types.ts` for the typed schema. Important tables:
-
-- `groups` — group metadata (id, name, created_by, created_at; can hold `invite_code`)
-- `group_members` — membership rows linking `user_id` → `group_id`
-- `expenses` — expenses with `group_id`, `created_by`, `title`, `total_amount`
-- `expense_participants` — per-expense owed amounts (`expense_id`, `user_id`, `owed_amount`)
-- `profiles` — user profiles (name)
-
-Splitting logic in the UI computes per-expense shares and persists them to `expense_participants` when confirmed.
-
-## Approach & architecture
-
-- Keep the group details and expense feed in a single view so actions stay in context.
-- Use one shared drawer container (single backdrop/transition) and swap components with a `drawerComponent` computed value. This avoids duplicate markup and keeps animations consistent.
-- Keep data normalized: members, expenses, and expense participants are separate tables for clarity and easier queries.
-
-## Challenges faced
-
-- Typing `defineEmits` in TypeScript: no-payload emits require `null` in the generic (`defineEmits<{ close: null }>()`) or the `defineEmits(['close'])` form. This caused a runtime/compile error during early edits.
-- Drawer composition: centralizing a drawer required passing `currentGroup`, `expenses`, and derived props consistently to avoid undefined access.
-
-## Limitations
-- Unable to delete/edit expenses after creation *(not enough time)*
-- Currently unresponsive, can be made to work on desktop too *(not enough time)*
-- OCR may lack high accuracy and read incorrect text, or it will not identify tax items (ex: 6% service tax) *(could use a better model)*
