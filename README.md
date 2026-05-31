@@ -63,3 +63,7 @@ Okay SO. Considering that not everyone has an iphone and that not everyone is go
 
 Check it out!
 
+## AI Usage
+I initially used AI to write the readme, but I've rewritten the whole thing myself now :D
+
+I also used AI for debugging the invites section, but yeah that's about it.
